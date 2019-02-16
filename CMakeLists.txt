@@ -2,6 +2,12 @@
 cmake_minimum_required(VERSION 3.13)
 project(npuzzle)
 
+set(COVERAGE OFF CACHE BOOL "Code coverage flags")
+
+if(COVERAGE)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0 --coverage")
+endif()
+
 set(BUILD_GMOCK   OFF CACHE BOOL "" FORCE)
 set(INSTALL_GTEST OFF CACHE BOOL "" FORCE)
 
