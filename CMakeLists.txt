@@ -31,10 +31,12 @@ target_sources(solver
     PUBLIC
         ${CMAKE_CURRENT_LIST_DIR}/include/InputParser.h
         ${CMAKE_CURRENT_LIST_DIR}/include/Puzzle.h
+        ${CMAKE_CURRENT_LIST_DIR}/include/Solver.h
 
     PRIVATE
         ${CMAKE_CURRENT_LIST_DIR}/src/InputParser.cpp
         ${CMAKE_CURRENT_LIST_DIR}/src/Puzzle.cpp
+        ${CMAKE_CURRENT_LIST_DIR}/src/Solver.cpp
 )
 
 

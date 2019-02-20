@@ -4,16 +4,25 @@
 #include <numeric>
 #include <iomanip>
 
-Puzzle::Puzzle(void) : g(0), h(0), f(0) {}
+Puzzle::Puzzle(void) : size(0), parent(nullptr), g(0), h(0), f(0) {}
 
-Puzzle::Puzzle(std::size_t size, std::vector<int> const & tiles) : g(0), h(0), f(0) {
+Puzzle::Puzzle(std::size_t size, std::vector<int> const & tiles) : parent(nullptr), g(0), h(0), f(0) {
 
     init(size, tiles);
 }
 
 Puzzle::Puzzle(Puzzle const & target) {
 
-    *this = target;
+    (*this) = target;
+}
+
+Puzzle::Puzzle(Puzzle const & target, int direction) {
+
+    (*this) = target;
+    (*this).parent = const_cast<Puzzle *>(&target);
+    (*this).g++;
+
+    (*this).move(direction);
 }
 
 Puzzle::~Puzzle(void) {}
@@ -28,7 +37,6 @@ void Puzzle::init(std::size_t size, std::vector<int> const & tiles) {
 
     if (tiles.size() != size * size || !check_tiles())
         throw std::runtime_error("Invalid input"); //
-
 }
 
 bool Puzzle::isSolvable(void) const {
@@ -52,18 +60,52 @@ bool Puzzle::isSolvable(void) const {
 
 }
 
+void Puzzle::updateScore(int (*f)(Puzzle const &, Puzzle const &), Puzzle const & goal) {
+
+    this->h = f(*this, goal);
+    this->f = this->g + this->h;
+}
+
+std::string Puzzle::graph(void) const {
+
+    std::stringstream ss;
+
+    ss << "\"";
+    ss << *this;
+    ss << "\"";
+
+    if (!parent)
+        return (ss.str());
+
+    ss << " -> ";
+
+    ss << "\"";
+    ss << *parent;
+    ss << "\"";
+
+    return (ss.str());
+}
+
 Puzzle & Puzzle::operator = (Puzzle const & target) {
 
-    size  = target.size;
-    tiles = target.tiles;
+    size   = target.size;
+    tiles  = target.tiles;
+    parent = target.parent;
+    g = target.g;
+    h = target.h;
+    f = target.f;
 
-    return *this;
+    return (*this);
 }
 
 bool Puzzle::operator == (Puzzle const & target) const {
 
-    return (size  == target.size &&
-            tiles == target.tiles);
+    return (size   == target.size &&
+            tiles  == target.tiles &&
+            parent == target.parent &&
+            g == target.g &&
+            h == target.h &&
+            f == target.f);
 }
 
 std::vector<int> Puzzle::get_tiles(void) const {
@@ -76,14 +118,80 @@ std::size_t Puzzle::get_size(void) const {
     return (this->size);
 }
 
+std::size_t Puzzle::get_score(void) const {
+
+    return (this->f);
+}
+
+std::size_t Puzzle::get_cost(void) const {
+
+    return (this->g);
+}
+
 bool Puzzle::check_tiles(void) const {
 
-    std::vector<int> tmp(tiles), sorted(size * size);
+    std::vector<int> copy(tiles), sorted(size * size);
 
     std::iota(sorted.begin(), sorted.end(), 0);
-    std::sort(tmp.begin(), tmp.end());
+    std::sort(copy.begin(), copy.end());
 
-    return (tmp == sorted);
+    return (copy == sorted);
+}
+
+void Puzzle::move(int direction) {
+
+    int i_zero = std::distance(tiles.begin(), std::find(tiles.begin(), tiles.end(), 0));
+    int x_zero = i_zero / size;
+    int y_zero = i_zero % size;
+    int i_swap, x_swap, y_swap;
+
+    switch (direction) {
+        case UP:
+            x_swap = x_zero + 1;
+            y_swap = y_zero;
+            break;
+        case DOWN:
+            x_swap = x_zero - 1;
+            y_swap = y_zero;
+            break;
+        case LEFT:
+            x_swap = x_zero;
+            y_swap = y_zero + 1;
+            break;
+        case RIGHT:
+            x_swap = x_zero;
+            y_swap = y_zero - 1;
+            break;
+        default:
+            throw std::runtime_error("wrong direction");
+    }
+
+    if (x_swap < 0 || x_swap >= size || y_swap < 0 || y_swap >= size)
+        throw std::runtime_error("wrong direction");
+
+    i_swap = x_swap * size + y_swap;
+    std::swap(tiles[i_zero], tiles[i_swap]);
+}
+
+std::vector<Puzzle *> Puzzle::expand(void) {
+
+    std::vector<Puzzle *> list;
+
+    for (int i = UP; i <= RIGHT; i++) {
+        try {
+            Puzzle *elem = new Puzzle(*this, i);
+            list.push_back(elem);
+        } catch (...) {
+            ;
+        }
+    }
+
+    return (list);
+}
+
+bool compare(Puzzle const & p1, Puzzle const & p2) {
+
+    return (p1.get_tiles() == p2.get_tiles());
 }
 
 bool CheckParity(Puzzle const & p1, Puzzle const & p2) {
@@ -114,7 +222,7 @@ int ManhattanDistance(Puzzle const & p1, Puzzle const & p2) {
     std::vector<int> t1 = p1.get_tiles();
     std::vector<int> t2 = p2.get_tiles();
     std::size_t size = p1.get_size();
-    std::size_t sum = 0;
+    std::size_t sum  = 0;
 
     if (p1.get_size() != p2.get_size())
         return (-1);
@@ -139,8 +247,8 @@ int  LinearConflict(Puzzle const & p1, Puzzle const & p2) {
 
     std::vector<int> t1 = p1.get_tiles();
     std::vector<int> t2 = p2.get_tiles();
-    std::size_t size = p1.get_size();
-    std::size_t linear = 0;
+    std::size_t size    = p1.get_size();
+    std::size_t linear  = 0;
 
     if (p1.get_size() != p2.get_size())
         return (-1);
