@@ -184,25 +184,25 @@ TEST_F(PuzzleClass, Positive_Constructor) {
     EXPECT_EQ(z6, s6);
     EXPECT_EQ(z7, s7);
 
-    EXPECT_NO_THROW(Puzzle move(b3, Puzzle::UP));
-    EXPECT_NO_THROW(Puzzle move(b3, Puzzle::DOWN));
-    EXPECT_NO_THROW(Puzzle move(b3, Puzzle::LEFT));
-    EXPECT_NO_THROW(Puzzle move(b3, Puzzle::RIGHT));
-
-    EXPECT_NO_THROW(Puzzle move(s3, Puzzle::UP));
-    EXPECT_NO_THROW(Puzzle move(s3, Puzzle::RIGHT));
-
-    EXPECT_NO_THROW(Puzzle move(u3, Puzzle::DOWN));
-    EXPECT_NO_THROW(Puzzle move(u3, Puzzle::LEFT));
-
-    Puzzle move1(s3, Puzzle::UP);
-    Puzzle move2(s3, Puzzle::RIGHT);
-    Puzzle move3(u3, Puzzle::DOWN);
-    Puzzle move4(u3, Puzzle::LEFT);
-    EXPECT_EQ(move1.tiles, std::vector<std::size_t>({ 3, 8, 1, 2, 4, 0, 5, 7, 6 }));
-    EXPECT_EQ(move2.tiles, std::vector<std::size_t>({ 3, 0, 8, 2, 4, 1, 5, 7, 6 }));
-    EXPECT_EQ(move3.tiles, std::vector<std::size_t>({ 8, 5, 2, 0, 7, 3, 1, 6, 4 }));
-    EXPECT_EQ(move4.tiles, std::vector<std::size_t>({ 8, 5, 2, 1, 7, 3, 6, 0, 4 }));
+//    EXPECT_NO_THROW(Puzzle move(b3, Puzzle::UP));
+//    EXPECT_NO_THROW(Puzzle move(b3, Puzzle::DOWN));
+//    EXPECT_NO_THROW(Puzzle move(b3, Puzzle::LEFT));
+//    EXPECT_NO_THROW(Puzzle move(b3, Puzzle::RIGHT));
+//
+//    EXPECT_NO_THROW(Puzzle move(s3, Puzzle::UP));
+//    EXPECT_NO_THROW(Puzzle move(s3, Puzzle::RIGHT));
+//
+//    EXPECT_NO_THROW(Puzzle move(u3, Puzzle::DOWN));
+//    EXPECT_NO_THROW(Puzzle move(u3, Puzzle::LEFT));
+//
+//    Puzzle move1(s3, Puzzle::UP);
+//    Puzzle move2(s3, Puzzle::RIGHT);
+//    Puzzle move3(u3, Puzzle::DOWN);
+//    Puzzle move4(u3, Puzzle::LEFT);
+//    EXPECT_EQ(move1.tiles, std::vector<std::size_t>({ 3, 8, 1, 2, 4, 0, 5, 7, 6 }));
+//    EXPECT_EQ(move2.tiles, std::vector<std::size_t>({ 3, 0, 8, 2, 4, 1, 5, 7, 6 }));
+//    EXPECT_EQ(move3.tiles, std::vector<std::size_t>({ 8, 5, 2, 0, 7, 3, 1, 6, 4 }));
+//    EXPECT_EQ(move4.tiles, std::vector<std::size_t>({ 8, 5, 2, 1, 7, 3, 6, 0, 4 }));
 }
 
 TEST_F(PuzzleClass, Negative_Constructor) {
@@ -216,12 +216,12 @@ TEST_F(PuzzleClass, Negative_Constructor) {
     EXPECT_THROW(Puzzle p1(3, { 0, 1, 2, 3, 4, 5, 6, 7 }),       std::exception);
     EXPECT_THROW(Puzzle p1(3, { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 }), std::exception);
 
-    EXPECT_THROW(Puzzle move(s3, Puzzle::DOWN),  std::exception);
-    EXPECT_THROW(Puzzle move(s3, Puzzle::LEFT),  std::exception);
-    EXPECT_THROW(Puzzle move(u3, Puzzle::UP),    std::exception);
-    EXPECT_THROW(Puzzle move(u3, Puzzle::RIGHT), std::exception);
-
-    EXPECT_THROW(Puzzle move(s3, 5), std::exception);
+//    EXPECT_THROW(Puzzle move(s3, Puzzle::DOWN),  std::exception);
+//    EXPECT_THROW(Puzzle move(s3, Puzzle::LEFT),  std::exception);
+//    EXPECT_THROW(Puzzle move(u3, Puzzle::UP),    std::exception);
+//    EXPECT_THROW(Puzzle move(u3, Puzzle::RIGHT), std::exception);
+//
+//    EXPECT_THROW(Puzzle move(s3, 5), std::exception);
 }
 
 //TEST_F(PuzzleClass, Positive_updateScore) {

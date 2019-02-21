@@ -16,15 +16,6 @@ Puzzle::Puzzle(Puzzle const & target) {
     (*this) = target;
 }
 
-Puzzle::Puzzle(Puzzle const & target, int direction) {
-
-    (*this) = target;
-    (*this).parent = const_cast<Puzzle *>(&target);
-    (*this).g++;
-
-    (*this).move(direction);
-}
-
 Puzzle::~Puzzle(void) {}
 
 void Puzzle::init(std::size_t size, std::vector<std::size_t> const & tiles) {
@@ -86,40 +77,9 @@ std::string Puzzle::graph(void) const {
     return (ss.str());
 }
 
-Puzzle & Puzzle::operator = (Puzzle const & target) {
+std::vector<std::size_t> Puzzle::neighbor(int direction) {
 
-    size   = target.size;
-    tiles  = target.tiles;
-    parent = target.parent;
-    g = target.g;
-    h = target.h;
-    f = target.f;
-
-    return (*this);
-}
-
-bool Puzzle::operator == (Puzzle const & target) const {
-
-    return (size   == target.size &&
-            tiles  == target.tiles &&
-            parent == target.parent &&
-            g == target.g &&
-            h == target.h &&
-            f == target.f);
-}
-
-bool Puzzle::check_tiles(void) const {
-
-    std::vector<std::size_t> copy(tiles), sorted(size * size);
-
-    std::iota(sorted.begin(), sorted.end(), 0);
-    std::sort(copy.begin(), copy.end());
-
-    return (copy == sorted);
-}
-
-void Puzzle::move(int direction) {
-
+    std::vector<std::size_t> neighbor(tiles);
     int i_zero = std::distance(tiles.begin(), std::find(tiles.begin(), tiles.end(), 0));
     int x_zero = i_zero / size;
     int y_zero = i_zero % size;
@@ -150,23 +110,41 @@ void Puzzle::move(int direction) {
         throw std::runtime_error("wrong direction");
 
     i_swap = x_swap * size + y_swap;
-    std::swap(tiles[i_zero], tiles[i_swap]);
+    std::swap(neighbor[i_zero], neighbor[i_swap]);
+
+    return (neighbor);
 }
 
-std::vector<Puzzle *> Puzzle::expand(void) {
+Puzzle & Puzzle::operator = (Puzzle const & target) {
 
-    std::vector<Puzzle *> list;
+    size   = target.size;
+    tiles  = target.tiles;
+    parent = target.parent;
+    g = target.g;
+    h = target.h;
+    f = target.f;
 
-    for (int i = UP; i <= RIGHT; i++) {
-        try {
-            Puzzle *elem = new Puzzle(*this, i);
-            list.push_back(elem);
-        } catch (...) {
-            ;
-        }
-    }
+    return (*this);
+}
 
-    return (list);
+bool Puzzle::operator == (Puzzle const & target) const {
+
+    return (size   == target.size &&
+            tiles  == target.tiles &&
+            parent == target.parent &&
+            g == target.g &&
+            h == target.h &&
+            f == target.f);
+}
+
+bool Puzzle::check_tiles(void) const {
+
+    std::vector<std::size_t> copy(tiles), sorted(size * size);
+
+    std::iota(sorted.begin(), sorted.end(), 0);
+    std::sort(copy.begin(), copy.end());
+
+    return (copy == sorted);
 }
 
 bool compare(Puzzle const & p1, Puzzle const & p2) {

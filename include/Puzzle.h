@@ -12,21 +12,21 @@ class Puzzle {
 public:
 
     typedef int (*heuristic)(Puzzle const &, Puzzle const &);
-    enum direction { UP, DOWN, LEFT, RIGHT };
+    enum direction { UP, DOWN, LEFT, RIGHT, DIRECTION_LAST };
 
     Puzzle(void);
     Puzzle(std::size_t size, std::vector<std::size_t> const & tiles);
     Puzzle(Puzzle const & target);
-    Puzzle(Puzzle const & target, int direction);
     ~Puzzle(void);
 
     void init(std::size_t size, std::vector<std::size_t> const & tiles);
 
     bool isSolvable(void) const ;
     void updateScore(heuristic f, Puzzle const & goal);
-    std::vector<Puzzle *> expand(void);
 
     std::string graph(void) const;
+
+    std::vector<std::size_t> neighbor(int direction);
 
     Puzzle & operator = (Puzzle const & target);
     bool     operator == (Puzzle const & target) const ;
@@ -42,6 +42,7 @@ public:
 private:
     bool check_tiles(void) const ;
     void move(int direction);
+
 };
 
 std::ostream & operator << (std::ostream & out, const Puzzle & rhs);

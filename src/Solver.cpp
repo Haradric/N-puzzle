@@ -44,30 +44,48 @@ Puzzle const *Solver::search(void) {
     while (!open_list.empty()) {
 
 //        std::cout << graph() << std::endl;
-        auto best = std::min_element(open_list.begin(), open_list.end(), comp_f);// find_next_uc();
-        if ((*best)->tiles == goal.tiles) {
+        auto it = std::min_element(open_list.begin(), open_list.end(), comp_f);// find_next_uc();
+        Puzzle *current = *it;
+        if (current->tiles == goal.tiles) {
             std::cout << graph() << std::endl;
-            return (*best);
+            return (current);
         }
 
-        std::vector<Puzzle *> list = (*best)->expand();
-        std::move(best, best + 1, std::back_inserter(closed_list));
-        open_list.erase(best);
-        for (auto it = list.begin(); it != list.end(); it++) {
+        closed_list.insert(closed_list.begin(), current);
+        open_list.erase(it);
+
+        for (auto i = 0; i < Puzzle::DIRECTION_LAST; i++) {
+
+            Puzzle *neighbor;
+            try {
+                neighbor = new Puzzle(current->size, current->neighbor(i));
+                neighbor->parent = current;
+            } catch (...) {
+                neighbor = nullptr;
+            }
+
+            if (neighbor == nullptr)
+                continue ;
+
+            neighbor->updateScore(h, goal);
 
             std::vector<Puzzle *>::iterator elem;
 
-            (*it)->updateScore(h, goal);
-
-            elem = std::find_if(closed_list.begin(), closed_list.end(), [&](Puzzle *p) { return ((*p).tiles == (**it).tiles); });
+            elem = std::find_if(closed_list.begin(), closed_list.end(),
+                                [&](Puzzle *p) {
+                                    return ((*p).tiles == neighbor->tiles);
+                                });
             if (elem != closed_list.end())
                 continue ;
 
-            elem = std::find_if(open_list.begin(), open_list.end(), [&](Puzzle *p) { return ((*p).tiles == (**it).tiles); });
+            elem = std::find_if(open_list.begin(), open_list.end(),
+                                [&](Puzzle *p) {
+                                    return ((*p).tiles == neighbor->tiles);
+                                });
             if (elem == open_list.end())
-                open_list.push_back(*it);
-            else if ((*it)->g < (*elem)->g)
-                **elem = **it;
+                open_list.push_back(neighbor);
+            else if (neighbor->g < (*elem)->g)
+                **elem = *neighbor;
         }
     }
     throw std::runtime_error("can't find solution");
