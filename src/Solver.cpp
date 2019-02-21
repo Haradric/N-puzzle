@@ -6,9 +6,9 @@
 
 Solver::Solver(void) {}
 
-Solver::Solver(int size, std::vector<int> tiles, int (*h)(Puzzle const & p1, Puzzle const & p2)) {
+Solver::Solver(int size, std::vector<std::size_t> tiles, Puzzle::heuristic f) {
 
-    init(size, tiles, h);
+    init(size, tiles, f);
 }
 
 Solver::~Solver(void) {
@@ -22,9 +22,9 @@ Solver::~Solver(void) {
     closed_list.clear();
 }
 
-void Solver::init(int size, std::vector<int> tiles, int (*h)(Puzzle const & p1, Puzzle const & p2)) {
+void Solver::init(int size, std::vector<std::size_t> tiles, Puzzle::heuristic f) {
 
-    this->h = h;
+    this->h = f;
 
     initial.init(size, tiles);
     goal.init(size, generate_solved_map(size));
@@ -45,7 +45,7 @@ Puzzle const *Solver::search(void) {
 
 //        std::cout << graph() << std::endl;
         auto best = std::min_element(open_list.begin(), open_list.end(), comp_f);// find_next_uc();
-        if ((*best)->get_tiles() == goal.get_tiles()) {
+        if ((*best)->tiles == goal.tiles) {
             std::cout << graph() << std::endl;
             return (*best);
         }
@@ -59,14 +59,14 @@ Puzzle const *Solver::search(void) {
 
             (*it)->updateScore(h, goal);
 
-            elem = std::find_if(closed_list.begin(), closed_list.end(), [&](Puzzle *p) { return ((*p).get_tiles() == (**it).get_tiles()); });
+            elem = std::find_if(closed_list.begin(), closed_list.end(), [&](Puzzle *p) { return ((*p).tiles == (**it).tiles); });
             if (elem != closed_list.end())
                 continue ;
 
-            elem = std::find_if(open_list.begin(), open_list.end(), [&](Puzzle *p) { return ((*p).get_tiles() == (**it).get_tiles()); });
+            elem = std::find_if(open_list.begin(), open_list.end(), [&](Puzzle *p) { return ((*p).tiles == (**it).tiles); });
             if (elem == open_list.end())
                 open_list.push_back(*it);
-            else if ((*it)->get_cost() < (*elem)->get_cost())
+            else if ((*it)->g < (*elem)->g)
                 **elem = **it;
         }
     }
@@ -101,8 +101,8 @@ bool Solver::CheckParity(Puzzle const & p1, Puzzle const & p2) {
 
 int  Solver::MisplacedTiles(Puzzle const & p1, Puzzle const & p2) {
 
-    std::vector<int> t1 = p1.tiles;
-    std::vector<int> t2 = p2.tiles;
+    std::vector<std::size_t> t1 = p1.tiles;
+    std::vector<std::size_t> t2 = p2.tiles;
     std::size_t sum = 0;
 
     if (p1.size != p2.size)
@@ -118,8 +118,8 @@ int  Solver::MisplacedTiles(Puzzle const & p1, Puzzle const & p2) {
 
 int Solver::ManhattanDistance(Puzzle const & p1, Puzzle const & p2) {
 
-    std::vector<int> t1 = p1.tiles;
-    std::vector<int> t2 = p2.tiles;
+    std::vector<std::size_t> t1 = p1.tiles;
+    std::vector<std::size_t> t2 = p2.tiles;
     std::size_t size = p1.size;
     std::size_t sum  = 0;
 
@@ -144,8 +144,8 @@ int Solver::ManhattanDistance(Puzzle const & p1, Puzzle const & p2) {
 
 int  Solver::LinearConflict(Puzzle const & p1, Puzzle const & p2) {
 
-    std::vector<int> t1 = p1.tiles;
-    std::vector<int> t2 = p2.tiles;
+    std::vector<std::size_t> t1 = p1.tiles;
+    std::vector<std::size_t> t2 = p2.tiles;
     std::size_t size    = p1.size;
     std::size_t linear  = 0;
 
@@ -191,9 +191,9 @@ int  Solver::LinearConflict(Puzzle const & p1, Puzzle const & p2) {
     return (ManhattanDistance(p1, p2) + 2 * linear);
 }
 
-std::vector<int> Solver::generate_solved_map(int size) {
+std::vector<std::size_t> Solver::generate_solved_map(int size) {
 
-    std::vector<int> tiles;
+    std::vector<std::size_t> tiles;
     int i = 0;    // first row
     int j = 0;    // first column
     int m = size; // last row
@@ -233,7 +233,7 @@ std::vector<int> Solver::generate_solved_map(int size) {
 
 bool  Solver::comp_f(Puzzle const *p1, Puzzle const *p2) {
 
-    return (p1->get_score() < p2->get_score());
+    return (p1->f < p2->f);
 }
 
 //Puzzle & Solver::find_next_uc(void) {

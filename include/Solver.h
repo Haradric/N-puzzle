@@ -11,10 +11,10 @@ class Solver {
 
 public:
     Solver(void);
-    Solver(int size, std::vector<int> tiles, int (*h)(Puzzle const & p1, Puzzle const & p2));
+    Solver(int size, std::vector<std::size_t> tiles, Puzzle::heuristic f);
     ~Solver(void);
 
-    void init(int size, std::vector<int> tiles, int (*h)(Puzzle const & p1, Puzzle const & p2));
+    void init(int size, std::vector<std::size_t> tiles, Puzzle::heuristic f);
 
     Puzzle const *search(void);
 
@@ -34,7 +34,7 @@ private:
     std::vector<Puzzle *> open_list;
     std::vector<Puzzle *> closed_list;
 
-    std::vector<int> generate_solved_map(int size);
+    std::vector<std::size_t> generate_solved_map(int size);
     Puzzle & find_next_uc(void);
     static bool comp_f(Puzzle const *p1, Puzzle const *p2);
 };

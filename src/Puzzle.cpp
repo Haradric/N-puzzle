@@ -6,7 +6,7 @@
 
 Puzzle::Puzzle(void) : size(0), parent(nullptr), g(0), h(0), f(0) {}
 
-Puzzle::Puzzle(std::size_t size, std::vector<int> const & tiles) : parent(nullptr), g(0), h(0), f(0) {
+Puzzle::Puzzle(std::size_t size, std::vector<std::size_t> const & tiles) : parent(nullptr), g(0), h(0), f(0) {
 
     init(size, tiles);
 }
@@ -27,7 +27,7 @@ Puzzle::Puzzle(Puzzle const & target, int direction) {
 
 Puzzle::~Puzzle(void) {}
 
-void Puzzle::init(std::size_t size, std::vector<int> const & tiles) {
+void Puzzle::init(std::size_t size, std::vector<std::size_t> const & tiles) {
 
     this->size  = size;
     this->tiles = tiles;
@@ -60,7 +60,7 @@ bool Puzzle::isSolvable(void) const {
 
 }
 
-void Puzzle::updateScore(int (*f)(Puzzle const &, Puzzle const &), Puzzle const & goal) {
+void Puzzle::updateScore(heuristic f, Puzzle const & goal) {
 
     this->h = f(*this, goal);
     this->f = this->g + this->h;
@@ -108,29 +108,9 @@ bool Puzzle::operator == (Puzzle const & target) const {
             f == target.f);
 }
 
-std::vector<int> Puzzle::get_tiles(void) const {
-
-    return (this->tiles);
-}
-
-std::size_t Puzzle::get_size(void) const {
-
-    return (this->size);
-}
-
-std::size_t Puzzle::get_score(void) const {
-
-    return (this->f);
-}
-
-std::size_t Puzzle::get_cost(void) const {
-
-    return (this->g);
-}
-
 bool Puzzle::check_tiles(void) const {
 
-    std::vector<int> copy(tiles), sorted(size * size);
+    std::vector<std::size_t> copy(tiles), sorted(size * size);
 
     std::iota(sorted.begin(), sorted.end(), 0);
     std::sort(copy.begin(), copy.end());
@@ -191,13 +171,13 @@ std::vector<Puzzle *> Puzzle::expand(void) {
 
 bool compare(Puzzle const & p1, Puzzle const & p2) {
 
-    return (p1.get_tiles() == p2.get_tiles());
+    return (p1.tiles == p2.tiles);
 }
 
 std::ostream & operator << (std::ostream & out, const Puzzle & rhs) {
 
-    auto tiles = rhs.get_tiles();
-    auto size  = rhs.get_size();
+    auto tiles = rhs.tiles;
+    auto size  = rhs.size;
     auto width = std::to_string(size * size - 1).length();
 
     for (auto i = 0; i < tiles.size(); i++) {

@@ -6,20 +6,20 @@
 #include <vector>
 #include <iostream>
 
-std::vector<int> solvable3 = {
+std::vector<std::size_t> solvable3 = {
     3, 8, 0,
     2, 4, 1,
     5, 7, 6,
 };
 
-std::vector<int> solvable4 = {
+std::vector<std::size_t> solvable4 = {
     1,  2,  8,  9,
     0, 13,  6,  5,
     12, 15, 10,  3,
     7, 11, 14,  4,
 };
 
-std::vector<int> solvable5 = {
+std::vector<std::size_t> solvable5 = {
     23,  9, 15,  6,  0,
     17, 19,  1, 21,  2,
     10, 14,  7, 18, 16,
@@ -27,7 +27,7 @@ std::vector<int> solvable5 = {
     12, 20,  8, 24, 22,
 };
 
-std::vector<int> solvable6 = {
+std::vector<std::size_t> solvable6 = {
     25, 20, 14, 17, 35, 21,
     13, 11, 29, 23,  0,  5,
     33,  3,  4,  9, 27, 34,
@@ -36,7 +36,7 @@ std::vector<int> solvable6 = {
     28, 31,  8,  6,  1, 15,
 };
 
-std::vector<int> solvable7 = {
+std::vector<std::size_t> solvable7 = {
     26, 38, 16, 43, 40,  1,  2,
     7,  9, 47, 32,  6, 46, 10,
     28, 36, 37, 31, 12, 35, 41,
@@ -61,10 +61,10 @@ int main(int ac, const char **av) {
 
     try {
         Solver solver(3, solvable3, Solver::LinearConflict);
-//        Solver solver(4, solvable4, LinearConflict);
-//        Solver solver(5, solvable5, LinearConflict);
-//        Solver solver(6, solvable6, LinearConflict);
-//        Solver solver(7, solvable7, LinearConflict);
+//        Solver solver(4, solvable4, Solver::LinearConflict);
+//        Solver solver(5, solvable5, Solver::LinearConflict);
+//        Solver solver(6, solvable6, Solver::LinearConflict);
+//        Solver solver(7, solvable7, Solver::LinearConflict);
         solver.search();
     } catch (std::exception & e) {
         std::cerr << "Error: " << e.what() << std::endl;

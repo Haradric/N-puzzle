@@ -2,46 +2,46 @@
 #include "gtest/gtest.h"
 #include "Puzzle.h"
 
-static std::vector<int> blank3 = {
+static std::vector<std::size_t> blank3 = {
     1, 2, 3,
     8, 0, 4,
     7, 6, 5,
 };
 
-static std::vector<int> solvable3 = {
+static std::vector<std::size_t> solvable3 = {
     3, 8, 0,
     2, 4, 1,
     5, 7, 6,
 };
 
-static std::vector<int> unsolvable3 = {
+static std::vector<std::size_t> unsolvable3 = {
     8, 5, 2,
     1, 7, 3,
     0, 6, 4,
 };
 
-static std::vector<int> blank4 = {
+static std::vector<std::size_t> blank4 = {
      1,  2,  3,  4,
     12, 13, 14,  5,
     11,  0, 15,  6,
     10,  9,  8,  7,
 };
 
-static std::vector<int> solvable4 = {
+static std::vector<std::size_t> solvable4 = {
      1,  2,  8,  9,
      0, 13,  6,  5,
     12, 15, 10,  3,
      7, 11, 14,  4,
 };
 
-static std::vector<int> unsolvable4 = {
+static std::vector<std::size_t> unsolvable4 = {
      9,  5, 13, 12,
      4,  1,  0, 14,
      3, 10,  6,  8,
     11,  2,  7, 15,
 };
 
-static std::vector<int> blank5 = {
+static std::vector<std::size_t> blank5 = {
      1,  2,  3,  4,  5,
     16, 17, 18, 19,  6,
     15, 24,  0, 20,  7,
@@ -49,7 +49,7 @@ static std::vector<int> blank5 = {
     13, 12, 11, 10,  9,
 };
 
-static std::vector<int> solvable5 = {
+static std::vector<std::size_t> solvable5 = {
     23,  9, 15,  6,  0,
     17, 19,  1, 21,  2,
     10, 14,  7, 18, 16,
@@ -57,7 +57,7 @@ static std::vector<int> solvable5 = {
     12, 20,  8, 24, 22,
 };
 
-static std::vector<int> unsolvable5 = {
+static std::vector<std::size_t> unsolvable5 = {
     15,  8, 11, 13, 16,
      3,  0,  2,  9,  6,
      7,  4, 22, 24, 23,
@@ -65,7 +65,7 @@ static std::vector<int> unsolvable5 = {
     14, 20,  1, 21, 18,
 };
 
-static std::vector<int> blank6 = {
+static std::vector<std::size_t> blank6 = {
      1,  2,  3,  4,  5,  6,
     20, 21, 22, 23, 24,  7,
     19, 32, 33, 34, 25,  8,
@@ -74,7 +74,7 @@ static std::vector<int> blank6 = {
     16, 15, 14, 13, 12, 11,
 };
 
-static std::vector<int> solvable6 = {
+static std::vector<std::size_t> solvable6 = {
     25, 20, 14, 17, 35, 21,
     13, 11, 29, 23,  0,  5,
     33,  3,  4,  9, 27, 34,
@@ -83,7 +83,7 @@ static std::vector<int> solvable6 = {
     28, 31,  8,  6,  1, 15,
 };
 
-static std::vector<int> unsolvable6 = {
+static std::vector<std::size_t> unsolvable6 = {
     35, 13,  3,  1,  7,  4,
     29, 26, 34,  6,  9, 11,
     12, 14, 20, 32, 21, 23,
@@ -92,7 +92,7 @@ static std::vector<int> unsolvable6 = {
      2, 10, 27, 28, 30, 17,
 };
 
-static std::vector<int> blank7 = {
+static std::vector<std::size_t> blank7 = {
      1,  2,  3,  4,  5,  6,  7,
     24, 25, 26, 27, 28, 29,  8,
     23, 40, 41, 42, 43, 30,  9,
@@ -102,7 +102,7 @@ static std::vector<int> blank7 = {
     19, 18, 17, 16, 15, 14, 13,
 };
 
-static std::vector<int> solvable7 = {
+static std::vector<std::size_t> solvable7 = {
     26, 38, 16, 43, 40,  1,  2,
      7,  9, 47, 32,  6, 46, 10,
     28, 36, 37, 31, 12, 35, 41,
@@ -112,7 +112,7 @@ static std::vector<int> solvable7 = {
     33,  4, 14, 21, 20, 48, 25,
 };
 
-static std::vector<int> unsolvable7 = {
+static std::vector<std::size_t> unsolvable7 = {
      2, 31,  4,  1,  9,  3, 47,
     43, 11, 27, 41, 29, 18, 20,
     44, 13,  6, 32,  8,  7, 10,
@@ -166,11 +166,11 @@ TEST_F(PuzzleClass, Positive_Constructor) {
     y6.init(6, solvable6);
     y7.init(7, solvable7);
 
-    EXPECT_EQ(y3.get_tiles(), solvable3);
-    EXPECT_EQ(y4.get_tiles(), solvable4);
-    EXPECT_EQ(y5.get_tiles(), solvable5);
-    EXPECT_EQ(y6.get_tiles(), solvable6);
-    EXPECT_EQ(y7.get_tiles(), solvable7);
+    EXPECT_EQ(y3.tiles, solvable3);
+    EXPECT_EQ(y4.tiles, solvable4);
+    EXPECT_EQ(y5.tiles, solvable5);
+    EXPECT_EQ(y6.tiles, solvable6);
+    EXPECT_EQ(y7.tiles, solvable7);
 
     Puzzle z3(s3);
     Puzzle z4(s4);
@@ -199,15 +199,15 @@ TEST_F(PuzzleClass, Positive_Constructor) {
     Puzzle move2(s3, Puzzle::RIGHT);
     Puzzle move3(u3, Puzzle::DOWN);
     Puzzle move4(u3, Puzzle::LEFT);
-    EXPECT_EQ(move1.get_tiles(), std::vector<int>({ 3, 8, 1, 2, 4, 0, 5, 7, 6 }));
-    EXPECT_EQ(move2.get_tiles(), std::vector<int>({ 3, 0, 8, 2, 4, 1, 5, 7, 6 }));
-    EXPECT_EQ(move3.get_tiles(), std::vector<int>({ 8, 5, 2, 0, 7, 3, 1, 6, 4 }));
-    EXPECT_EQ(move4.get_tiles(), std::vector<int>({ 8, 5, 2, 1, 7, 3, 6, 0, 4 }));
+    EXPECT_EQ(move1.tiles, std::vector<std::size_t>({ 3, 8, 1, 2, 4, 0, 5, 7, 6 }));
+    EXPECT_EQ(move2.tiles, std::vector<std::size_t>({ 3, 0, 8, 2, 4, 1, 5, 7, 6 }));
+    EXPECT_EQ(move3.tiles, std::vector<std::size_t>({ 8, 5, 2, 0, 7, 3, 1, 6, 4 }));
+    EXPECT_EQ(move4.tiles, std::vector<std::size_t>({ 8, 5, 2, 1, 7, 3, 6, 0, 4 }));
 }
 
 TEST_F(PuzzleClass, Negative_Constructor) {
 
-    EXPECT_THROW(Puzzle p1(0, std::vector<int>(0)), std::exception);
+    EXPECT_THROW(Puzzle p1(0, std::vector<std::size_t>(0)), std::exception);
     EXPECT_THROW(Puzzle p1(1, { 1 }),               std::exception);
     EXPECT_THROW(Puzzle p1(2, { 0, 1, 2, 3 }),      std::exception);
 
