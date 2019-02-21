@@ -60,7 +60,7 @@ int main(int ac, const char **av) {
 //    std::cout << config << std::endl;
 
     try {
-        Solver solver(3, solvable3, LinearConflict);
+        Solver solver(3, solvable3, Solver::LinearConflict);
 //        Solver solver(4, solvable4, LinearConflict);
 //        Solver solver(5, solvable5, LinearConflict);
 //        Solver solver(6, solvable6, LinearConflict);

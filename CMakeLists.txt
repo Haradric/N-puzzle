@@ -55,4 +55,5 @@ target_sources(test
     PUBLIC
         ${CMAKE_CURRENT_LIST_DIR}/src/testInputParserClass.cpp
         ${CMAKE_CURRENT_LIST_DIR}/src/testPuzzleClass.cpp
+        ${CMAKE_CURRENT_LIST_DIR}/src/testSolverClass.cpp
 )

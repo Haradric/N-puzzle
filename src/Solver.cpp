@@ -93,6 +93,104 @@ std::string Solver::graph(void) const {
     return (ss.str());
 }
 
+bool Solver::CheckParity(Puzzle const & p1, Puzzle const & p2) {
+
+    return (p1.size == p2.size &&
+            p1.isSolvable() == p2.isSolvable());
+}
+
+int  Solver::MisplacedTiles(Puzzle const & p1, Puzzle const & p2) {
+
+    std::vector<int> t1 = p1.tiles;
+    std::vector<int> t2 = p2.tiles;
+    std::size_t sum = 0;
+
+    if (p1.size != p2.size)
+        return (-1);
+
+    for (auto i = 0; i < t1.size(); i++) {
+        if (t1[i] != t2[i])
+            sum++;
+    }
+
+    return (sum);
+}
+
+int Solver::ManhattanDistance(Puzzle const & p1, Puzzle const & p2) {
+
+    std::vector<int> t1 = p1.tiles;
+    std::vector<int> t2 = p2.tiles;
+    std::size_t size = p1.size;
+    std::size_t sum  = 0;
+
+    if (p1.size != p2.size)
+        return (-1);
+
+    for (auto i = 0; i < t1.size(); i++) {
+
+        if (t1[i] == 0)
+            continue ;
+
+        int j = std::distance(t2.begin(), std::find(t2.begin(), t2.end(), t1[i]));
+        int x1 = i / size;
+        int y1 = i % size;
+        int x2 = j / size;
+        int y2 = j % size;
+        sum += abs(x1 - x2) + abs(y1 - y2);
+    }
+
+    return (sum);
+}
+
+int  Solver::LinearConflict(Puzzle const & p1, Puzzle const & p2) {
+
+    std::vector<int> t1 = p1.tiles;
+    std::vector<int> t2 = p2.tiles;
+    std::size_t size    = p1.size;
+    std::size_t linear  = 0;
+
+    if (p1.size != p2.size)
+        return (-1);
+
+    for (auto i = 0; i < t1.size(); i++) {
+
+        if (t1[i] == 0)
+            continue ;
+
+        int i1 = std::distance(t2.begin(), std::find(t2.begin(), t2.end(), t1[i]));
+        int x1 = i1 / size;
+        int y1 = i1 % size;
+
+        // for row
+        for (auto k = i + 1; k % size != 0; k++) {
+
+            if (t1[k] == 0)
+                continue ;
+
+            int i2 = std::distance(t2.begin(), std::find(t2.begin(), t2.end(), t1[k]));
+            int x2 = i2 / size;
+            int y2 = i2 % size;
+            if (x1 == x2 && y1 > y2)
+                linear++;
+        }
+
+        // for col
+        for (auto k = i + size; k < t1.size(); k += size) {
+
+            if (t1[k] == 0)
+                continue ;
+
+            int i2 = std::distance(t2.begin(), std::find(t2.begin(), t2.end(), t1[k]));
+            int x2 = i2 / size;
+            int y2 = i2 % size;
+            if (x1 > x2 && y1 == y2)
+                linear++;
+        }
+    }
+
+    return (ManhattanDistance(p1, p2) + 2 * linear);
+}
+
 std::vector<int> Solver::generate_solved_map(int size) {
 
     std::vector<int> tiles;

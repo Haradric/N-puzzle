@@ -48,11 +48,6 @@ private:
     void move(int direction);
 };
 
-bool CheckParity(Puzzle const & p1, Puzzle const & p2);
-int  MisplacedTiles(Puzzle const & p1, Puzzle const & p2);
-int  ManhattanDistance(Puzzle const & p1, Puzzle const & p2);
-int  LinearConflict(Puzzle const & p1, Puzzle const & p2);
-
 std::ostream & operator << (std::ostream & out, const Puzzle & rhs);
 
 #endif
