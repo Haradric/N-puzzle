@@ -42,9 +42,9 @@ Puzzle const *Solver::search(void) {
 
         for (auto i = 0; i < Puzzle::DIRECTION_LAST; i++) {
 
-            Puzzle *neighbor;
+            std::unique_ptr<Puzzle> neighbor;
             try {
-                neighbor = new Puzzle(current->size, current->neighbor(i));
+                neighbor.reset(new Puzzle(current->size, current->neighbor(i)));
                 neighbor->parent = current;
             } catch (...) {
                 neighbor = nullptr;
@@ -69,7 +69,7 @@ Puzzle const *Solver::search(void) {
                                     return ((*p).tiles == neighbor->tiles);
                                 });
             if (elem == open_list.end())
-                open_list.push_back(neighbor);
+                open_list.push_back(neighbor.release());
             else if (neighbor->g < (*elem)->g)
                 **elem = *neighbor;
         }
