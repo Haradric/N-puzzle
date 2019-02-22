@@ -29,7 +29,7 @@ private:
     Puzzle initial;
     Puzzle goal;
 
-    int (*h)(Puzzle const & p1, Puzzle const & p2);
+    Puzzle::heuristic const h;
 
     std::vector<Puzzle *> open_list;
     std::vector<Puzzle *> closed_list;

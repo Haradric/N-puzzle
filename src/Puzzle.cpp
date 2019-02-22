@@ -4,24 +4,7 @@
 #include <numeric>
 #include <iomanip>
 
-Puzzle::Puzzle(void) : size(0), parent(nullptr), g(0), h(0), f(0) {}
-
-Puzzle::Puzzle(std::size_t size, std::vector<std::size_t> const & tiles) : parent(nullptr), g(0), h(0), f(0) {
-
-    init(size, tiles);
-}
-
-Puzzle::Puzzle(Puzzle const & target) {
-
-    (*this) = target;
-}
-
-Puzzle::~Puzzle(void) {}
-
-void Puzzle::init(std::size_t size, std::vector<std::size_t> const & tiles) {
-
-    this->size  = size;
-    this->tiles = tiles;
+Puzzle::Puzzle(std::size_t size, std::vector<std::size_t> const & tiles) : tiles(tiles), size(size), parent(nullptr), g(0), h(0), f(0) {
 
     if (size < 3)
         throw std::runtime_error("The size of the puzzle should be more than 3");
@@ -29,6 +12,13 @@ void Puzzle::init(std::size_t size, std::vector<std::size_t> const & tiles) {
     if (tiles.size() != size * size || !check_tiles())
         throw std::runtime_error("Invalid input"); //
 }
+
+Puzzle::Puzzle(Puzzle const & target) : tiles(target.tiles), size(target.size) {
+
+    (*this) = target;
+}
+
+Puzzle::~Puzzle(void) {}
 
 bool Puzzle::isSolvable(void) const {
 
@@ -80,7 +70,7 @@ std::string Puzzle::graph(void) const {
 std::vector<std::size_t> Puzzle::neighbor(int direction) {
 
     std::vector<std::size_t> neighbor(tiles);
-    int i_zero = std::distance(tiles.begin(), std::find(tiles.begin(), tiles.end(), 0));
+    int i_zero = std::distance(neighbor.begin(), std::find(neighbor.begin(), neighbor.end(), 0));
     int x_zero = i_zero / size;
     int y_zero = i_zero % size;
     int i_swap, x_swap, y_swap;
@@ -117,8 +107,6 @@ std::vector<std::size_t> Puzzle::neighbor(int direction) {
 
 Puzzle & Puzzle::operator = (Puzzle const & target) {
 
-    size   = target.size;
-    tiles  = target.tiles;
     parent = target.parent;
     g = target.g;
     h = target.h;

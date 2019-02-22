@@ -14,12 +14,9 @@ public:
     typedef int (*heuristic)(Puzzle const &, Puzzle const &);
     enum direction { UP, DOWN, LEFT, RIGHT, DIRECTION_LAST };
 
-    Puzzle(void);
     Puzzle(std::size_t size, std::vector<std::size_t> const & tiles);
-    Puzzle(Puzzle const & target);
+    Puzzle(Puzzle const &);
     ~Puzzle(void);
-
-    void init(std::size_t size, std::vector<std::size_t> const & tiles);
 
     bool isSolvable(void) const ;
     void updateScore(heuristic f, Puzzle const & goal);
@@ -31,9 +28,9 @@ public:
     Puzzle & operator = (Puzzle const & target);
     bool     operator == (Puzzle const & target) const ;
 
-    std::vector<std::size_t> tiles;
-    std::size_t size;
-    Puzzle      *parent;
+    std::vector<std::size_t> const tiles;
+    std::size_t const size;
+    Puzzle            *parent;
 
     std::size_t g;  // cost
     std::size_t h;  // heuristic

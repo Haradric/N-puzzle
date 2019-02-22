@@ -4,11 +4,14 @@
 #include <algorithm>
 #include <sstream>
 
-Solver::Solver(void) {}
+Solver::Solver(int size, std::vector<std::size_t> tiles, Puzzle::heuristic f) : initial(size, tiles), goal(size, generate_solved_map(size)), h(f) {
 
-Solver::Solver(int size, std::vector<std::size_t> tiles, Puzzle::heuristic f) {
+    if (initial.isSolvable() != goal.isSolvable())
+        throw std::runtime_error("this puzzle is unsolvable");
 
-    init(size, tiles, f);
+    Puzzle * copy = new Puzzle(initial.size, initial.tiles);
+    copy->updateScore(h, goal);
+    open_list.insert(open_list.begin(), copy);
 }
 
 Solver::~Solver(void) {
@@ -22,23 +25,6 @@ Solver::~Solver(void) {
     closed_list.clear();
 }
 
-void Solver::init(int size, std::vector<std::size_t> tiles, Puzzle::heuristic f) {
-
-    this->h = f;
-
-    initial.init(size, tiles);
-    goal.init(size, generate_solved_map(size));
-
-    if (initial.isSolvable() != goal.isSolvable())
-        throw std::runtime_error("this puzzle is unsolvable");
-
-    Puzzle * copy = new Puzzle();
-    (*copy) = initial;
-    copy->updateScore(h, goal);
-
-    open_list.insert(open_list.begin(), copy);
-}
-
 Puzzle const *Solver::search(void) {
 
     while (!open_list.empty()) {
@@ -47,7 +33,7 @@ Puzzle const *Solver::search(void) {
         auto it = std::min_element(open_list.begin(), open_list.end(), comp_f);// find_next_uc();
         Puzzle *current = *it;
         if (current->tiles == goal.tiles) {
-            std::cout << graph() << std::endl;
+//            std::cout << graph() << std::endl;
             return (current);
         }
 

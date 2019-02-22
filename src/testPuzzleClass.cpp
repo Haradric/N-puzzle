@@ -122,55 +122,37 @@ static std::vector<std::size_t> unsolvable7 = {
     21, 12, 38, 40, 42, 22, 37,
 };
 
-class PuzzleClass : public ::testing::Test {
+static Puzzle b3(3, blank3);
+static Puzzle b4(4, blank4);
+static Puzzle b5(5, blank5);
+static Puzzle b6(6, blank6);
+static Puzzle b7(7, blank7);
 
-protected:
-    void SetUp() {
-        b3.init(3, blank3);
-        b4.init(4, blank4);
-        b5.init(5, blank5);
-        b6.init(6, blank6);
-        b7.init(7, blank7);
+static Puzzle s3(3, solvable3);
+static Puzzle s4(4, solvable4);
+static Puzzle s5(5, solvable5);
+static Puzzle s6(6, solvable6);
+static Puzzle s7(7, solvable7);
 
-        s3.init(3, solvable3);
-        s4.init(4, solvable4);
-        s5.init(5, solvable5);
-        s6.init(6, solvable6);
-        s7.init(7, solvable7);
+static Puzzle u3(3, unsolvable3);
+static Puzzle u4(4, unsolvable4);
+static Puzzle u5(5, unsolvable5);
+static Puzzle u6(6, unsolvable6);
+static Puzzle u7(7, unsolvable7);
 
-        u3.init(3, unsolvable3);
-        u4.init(4, unsolvable4);
-        u5.init(5, unsolvable5);
-        u6.init(6, unsolvable6);
-        u7.init(7, unsolvable7);
-    }
-    void TearDown() {}
+TEST(PuzzleClass, Positive_Constructor) {
 
-    Puzzle b3, b4, b5, b6, b7;
-    Puzzle s3, s4, s5, s6, s7;
-    Puzzle u3, u4, u5, u6, u7;
-};
+    EXPECT_NO_THROW(Puzzle p(3, blank3));
+    EXPECT_NO_THROW(Puzzle p(4, blank4));
+    EXPECT_NO_THROW(Puzzle p(5, blank5));
+    EXPECT_NO_THROW(Puzzle p(6, blank6));
+    EXPECT_NO_THROW(Puzzle p(7, blank7));
 
-TEST_F(PuzzleClass, Positive_Constructor) {
-
-    EXPECT_NO_THROW(Puzzle x3(3, blank3));
-    EXPECT_NO_THROW(Puzzle x4(4, blank4));
-    EXPECT_NO_THROW(Puzzle x5(5, blank5));
-    EXPECT_NO_THROW(Puzzle x6(6, blank6));
-    EXPECT_NO_THROW(Puzzle x7(7, blank7));
-
-    Puzzle y3, y4, y5, y6, y7;
-    y3.init(3, solvable3);
-    y4.init(4, solvable4);
-    y5.init(5, solvable5);
-    y6.init(6, solvable6);
-    y7.init(7, solvable7);
-
-    EXPECT_EQ(y3.tiles, solvable3);
-    EXPECT_EQ(y4.tiles, solvable4);
-    EXPECT_EQ(y5.tiles, solvable5);
-    EXPECT_EQ(y6.tiles, solvable6);
-    EXPECT_EQ(y7.tiles, solvable7);
+    EXPECT_EQ(s3.tiles, solvable3);
+    EXPECT_EQ(s4.tiles, solvable4);
+    EXPECT_EQ(s5.tiles, solvable5);
+    EXPECT_EQ(s6.tiles, solvable6);
+    EXPECT_EQ(s7.tiles, solvable7);
 
     Puzzle z3(s3);
     Puzzle z4(s4);
@@ -205,7 +187,7 @@ TEST_F(PuzzleClass, Positive_Constructor) {
 //    EXPECT_EQ(move4.tiles, std::vector<std::size_t>({ 8, 5, 2, 1, 7, 3, 6, 0, 4 }));
 }
 
-TEST_F(PuzzleClass, Negative_Constructor) {
+TEST(PuzzleClass, Negative_Constructor) {
 
     EXPECT_THROW(Puzzle p1(0, std::vector<std::size_t>(0)), std::exception);
     EXPECT_THROW(Puzzle p1(1, { 1 }),               std::exception);
