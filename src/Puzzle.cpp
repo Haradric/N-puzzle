@@ -58,6 +58,8 @@ std::string Puzzle::graph(void) const {
 
     ss << "\"";
     ss << *this;
+    ss << "g:" << this->g << "  h:" << this->h << std::endl;
+    ss << "f:" << this->f << " id:" << this->id << std::endl;
     ss << "\"";
 
     if (!parent)
@@ -67,6 +69,8 @@ std::string Puzzle::graph(void) const {
 
     ss << "\"";
     ss << *parent;
+    ss << "g:" << parent->g << "  h:" << parent->h << std::endl;
+    ss << "f:" << parent->f << " id:" << parent->id << std::endl;
     ss << "\"";
 
     return (ss.str());
@@ -164,7 +168,6 @@ std::ostream & operator << (std::ostream & out, const Puzzle & rhs) {
         else
             out << std::endl;
     }
-    out << "g:" << rhs.g << "  h:" << rhs.h << std::endl;
-    out << "f:" << rhs.f << " id:" << rhs.id << std::endl;
+
     return (out);
 }
