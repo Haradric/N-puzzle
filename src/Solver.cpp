@@ -1,10 +1,11 @@
 
 #include "Solver.h"
 
+#include <list>
 #include <algorithm>
 #include <sstream>
 
-Solver::Solver(int size, std::vector<std::size_t> tiles, Puzzle::heuristic f) : initial(size, tiles), goal(size, generate_solved_map(size)), h(f) {
+Solver::Solver(int size, std::vector<std::size_t> tiles, Puzzle::heuristic f) : initial(size, tiles), goal(size, generate_solved_map(size)), h(f), solution(nullptr) {
 
     if (initial.isSolvable() != goal.isSolvable())
         throw std::runtime_error("this puzzle is unsolvable");
@@ -27,7 +28,7 @@ Solver::~Solver(void) {
     closed_list.clear();
 }
 
-Puzzle const *Solver::search(void) {
+void Solver::search(void) {
 
     while (!open_list.empty()) {
 
@@ -36,7 +37,9 @@ Puzzle const *Solver::search(void) {
         Puzzle *current = it->second;
         if (current->tiles == goal.tiles) {
 //            std::cout << graph() << std::endl;
-            return (current);
+            solution = current;
+            report();
+            return ;
         }
 
         closed_list.insert(*it);
@@ -76,6 +79,26 @@ void Solver::discover_node(Puzzle const &puzzle) {
         else if (neighbor.get()->g < it->second->g)
             *(it->second) = *(neighbor.get());
     }
+}
+
+void Solver::report(void) {
+
+//    if (solution == nullptr)
+    std::list<Puzzle *> states;
+
+    states.push_front(solution);
+    while (states.front()->parent != nullptr) {
+        states.push_front(states.front()->parent);
+    }
+
+    for (auto it = states.begin(); it != states.end(); it++) {
+        std::cout << **it << std::endl;
+    }
+
+    std::cout << "complexity in time: " << open_list.size() << std::endl;
+    std::cout << "complexity in size: " << std::endl; // ??
+    std::cout << "number of moves:    " << states.size() - 1 << std::endl;
+
 }
 
 std::string Solver::graph(void) const {

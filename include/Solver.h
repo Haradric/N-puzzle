@@ -17,10 +17,11 @@ public:
 
     void init(int size, std::vector<std::size_t> tiles, Puzzle::heuristic f);
 
-    Puzzle const *search(void);
+    void search(void);
 
     std::string graph(void) const;
 
+    // h(x)
     static bool CheckParity(Puzzle const & p1, Puzzle const & p2);
     static int  MisplacedTiles(Puzzle const & p1, Puzzle const & p2);
     static int  ManhattanDistance(Puzzle const & p1, Puzzle const & p2);
@@ -30,6 +31,11 @@ private:
 
     typedef std::pair<std::size_t, Puzzle *> solver_entry;
 
+    std::vector<std::size_t> generate_solved_map(int size);
+    void discover_node(Puzzle const &);
+    void report(void);
+    static bool comp_f(solver_entry const &, solver_entry const &);
+
     Puzzle initial;
     Puzzle goal;
 
@@ -37,10 +43,8 @@ private:
 
     std::map<std::size_t, Puzzle *> open_list;
     std::map<std::size_t, Puzzle *> closed_list;
+    Puzzle *solution;
 
-    std::vector<std::size_t> generate_solved_map(int size);
-    void discover_node(Puzzle const &);
-    static bool comp_f(solver_entry const &, solver_entry const &);
 };
 
 #endif
