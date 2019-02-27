@@ -46,6 +46,7 @@ Puzzle const *Solver::search(void) {
             try {
                 neighbor.reset(new Puzzle(current->size, current->neighbor(i)));
                 neighbor->parent = current;
+                neighbor->g = current->g + 1;
             } catch (...) {
                 neighbor = nullptr;
             }
