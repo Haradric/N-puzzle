@@ -4,6 +4,8 @@
 #include <numeric>
 #include <iomanip>
 
+std::size_t Puzzle::inst = 0;
+
 Puzzle::Puzzle(std::size_t size, std::vector<std::size_t> const & tiles) : tiles(tiles), size(size), parent(nullptr), g(0), h(0), f(0) {
 
     if (size < 3)
@@ -11,11 +13,14 @@ Puzzle::Puzzle(std::size_t size, std::vector<std::size_t> const & tiles) : tiles
 
     if (tiles.size() != size * size || !check_tiles())
         throw std::runtime_error("Invalid input"); //
+
+    id = inst++;
 }
 
 Puzzle::Puzzle(Puzzle const & target) : tiles(target.tiles), size(target.size) {
 
     (*this) = target;
+    id = inst++;
 }
 
 Puzzle::~Puzzle(void) {}
@@ -67,7 +72,7 @@ std::string Puzzle::graph(void) const {
     return (ss.str());
 }
 
-std::vector<std::size_t> Puzzle::neighbor(int direction) {
+std::vector<std::size_t> Puzzle::neighbor(int direction) const {
 
     std::vector<std::size_t> neighbor(tiles);
     int i_zero = std::distance(neighbor.begin(), std::find(neighbor.begin(), neighbor.end(), 0));
@@ -125,6 +130,17 @@ bool Puzzle::operator == (Puzzle const & target) const {
             f == target.f);
 }
 
+std::size_t Puzzle::hash(Puzzle const & puzzle) {
+
+    std::size_t seed = puzzle.size;
+
+    for(auto it = puzzle.tiles.begin(); it != puzzle.tiles.end(); it++) {
+        seed ^= *it + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+    }
+
+    return (seed);
+}
+
 bool Puzzle::check_tiles(void) const {
 
     std::vector<std::size_t> copy(tiles), sorted(size * size);
@@ -133,11 +149,6 @@ bool Puzzle::check_tiles(void) const {
     std::sort(copy.begin(), copy.end());
 
     return (copy == sorted);
-}
-
-bool compare(Puzzle const & p1, Puzzle const & p2) {
-
-    return (p1.tiles == p2.tiles);
 }
 
 std::ostream & operator << (std::ostream & out, const Puzzle & rhs) {
@@ -153,6 +164,7 @@ std::ostream & operator << (std::ostream & out, const Puzzle & rhs) {
         else
             out << std::endl;
     }
-
+    out << "g:" << rhs.g << "  h:" << rhs.h << std::endl;
+    out << "f:" << rhs.f << " id:" << rhs.id << std::endl;
     return (out);
 }

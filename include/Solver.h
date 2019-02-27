@@ -5,6 +5,7 @@
 #include "Puzzle.h"
 #include <cstddef>
 #include <vector>
+#include <map>
 #include <memory>
 
 class Solver {
@@ -26,17 +27,20 @@ public:
     static int  LinearConflict(Puzzle const & p1, Puzzle const & p2);
 
 private:
+    typedef std::pair<std::size_t, Puzzle *> solver_entry;
+
     Puzzle initial;
     Puzzle goal;
 
     Puzzle::heuristic const h;
 
-    std::vector<Puzzle *> open_list;
-    std::vector<Puzzle *> closed_list;
+    std::map<std::size_t, Puzzle *> open_list;
+    std::map<std::size_t, Puzzle *> closed_list;
 
     std::vector<std::size_t> generate_solved_map(int size);
+    void discover_node(Puzzle const &);
     Puzzle & find_next_uc(void);
-    static bool comp_f(Puzzle const *p1, Puzzle const *p2);
+    static bool comp_f(solver_entry const &, solver_entry const &);
 };
 
 #endif

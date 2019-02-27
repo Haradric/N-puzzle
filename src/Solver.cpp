@@ -11,17 +11,19 @@ Solver::Solver(int size, std::vector<std::size_t> tiles, Puzzle::heuristic f) : 
 
     Puzzle * copy = new Puzzle(initial.size, initial.tiles);
     copy->updateScore(h, goal);
-    open_list.insert(open_list.begin(), copy);
+
+    solver_entry entry(Puzzle::hash(*copy), copy);
+    open_list.insert(entry);
 }
 
 Solver::~Solver(void) {
 
     for (auto it = open_list.begin(); it != open_list.end(); it++)
-        delete *it;
+        delete (*it).second;
     open_list.clear();
 
     for (auto it = closed_list.begin(); it != closed_list.end(); it++)
-        delete *it;
+        delete (*it).second;
     closed_list.clear();
 }
 
@@ -31,51 +33,49 @@ Puzzle const *Solver::search(void) {
 
 //        std::cout << graph() << std::endl;
         auto it = std::min_element(open_list.begin(), open_list.end(), comp_f);// find_next_uc();
-        Puzzle *current = *it;
+        Puzzle *current = it->second;
         if (current->tiles == goal.tiles) {
 //            std::cout << graph() << std::endl;
             return (current);
         }
 
-        closed_list.insert(closed_list.begin(), current);
+        closed_list.insert(*it);
         open_list.erase(it);
 
-        for (auto i = 0; i < Puzzle::DIRECTION_LAST; i++) {
-
-            std::unique_ptr<Puzzle> neighbor;
-            try {
-                neighbor.reset(new Puzzle(current->size, current->neighbor(i)));
-                neighbor->parent = current;
-                neighbor->g = current->g + 1;
-            } catch (...) {
-                neighbor = nullptr;
-            }
-
-            if (neighbor == nullptr)
-                continue ;
-
-            neighbor->updateScore(h, goal);
-
-            std::vector<Puzzle *>::iterator elem;
-
-            elem = std::find_if(closed_list.begin(), closed_list.end(),
-                                [&](Puzzle *p) {
-                                    return ((*p).tiles == neighbor->tiles);
-                                });
-            if (elem != closed_list.end())
-                continue ;
-
-            elem = std::find_if(open_list.begin(), open_list.end(),
-                                [&](Puzzle *p) {
-                                    return ((*p).tiles == neighbor->tiles);
-                                });
-            if (elem == open_list.end())
-                open_list.push_back(neighbor.release());
-            else if (neighbor->g < (*elem)->g)
-                **elem = *neighbor;
-        }
+        discover_node(*current);
     }
     throw std::runtime_error("can't find solution");
+}
+
+void Solver::discover_node(Puzzle const &puzzle) {
+
+    for (auto i = 0; i < Puzzle::DIRECTION_LAST; i++) {
+
+        std::map<std::size_t, Puzzle *>::iterator it;
+        std::unique_ptr<Puzzle> neighbor;
+        std::size_t             hash;
+
+        try {
+            neighbor.reset(new Puzzle(puzzle.size, puzzle.neighbor(i)));
+            neighbor->parent = const_cast<Puzzle *>(&puzzle);
+            neighbor->g = puzzle.g + 1;
+            neighbor->updateScore(h, goal);
+        } catch (...) {
+            continue ;
+        }
+
+        hash = Puzzle::hash(*(neighbor.get()));
+
+        it = closed_list.find(hash);
+        if (it != closed_list.end())
+            continue ;
+
+        it = open_list.find(hash);
+        if (it == open_list.end())
+            open_list.insert(solver_entry(hash, neighbor.release()));
+        else if (neighbor.get()->g < it->second->g)
+            *(it->second) = *(neighbor.get());
+    }
 }
 
 std::string Solver::graph(void) const {
@@ -84,13 +84,13 @@ std::string Solver::graph(void) const {
 
     ss << "strict digraph G {" << std::endl;
 
-    for (auto i = 0; i < open_list.size(); i++) {
-        ss << "    " << open_list[i]->graph() << ";" << std::endl;
+    for (auto it = open_list.begin(); it != open_list.end(); it++) {
+        ss << "    " << it->second->graph() << ";" << std::endl;
     }
 
-    for (auto i = 0; i < closed_list.size(); i++) {
-        ss << "    " << closed_list[i]->graph() << std::endl;
-        ss << "    \"" << *(closed_list[i]) << "\" [style=filled];" << std::endl;
+    for (auto it = closed_list.begin(); it != closed_list.end(); it++) {
+        ss << "    " << it->second->graph() << std::endl;
+        ss << "    \"" << *(it->second) << "\" [style=filled];" << std::endl;
     }
 
     ss << "}" << std::endl;
@@ -236,9 +236,9 @@ std::vector<std::size_t> Solver::generate_solved_map(int size) {
     return (tiles);
 }
 
-bool  Solver::comp_f(Puzzle const *p1, Puzzle const *p2) {
+bool  Solver::comp_f(solver_entry const & p1, solver_entry const & p2) {
 
-    return (p1->f < p2->f);
+    return (p1.second->f < p2.second->f);
 }
 
 //Puzzle & Solver::find_next_uc(void) {

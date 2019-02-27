@@ -22,11 +22,12 @@ public:
     void updateScore(heuristic f, Puzzle const & goal);
 
     std::string graph(void) const;
-
-    std::vector<std::size_t> neighbor(int direction);
+    std::vector<std::size_t> neighbor(int direction) const ;
 
     Puzzle & operator = (Puzzle const & target);
     bool     operator == (Puzzle const & target) const ;
+
+    static std::size_t hash(Puzzle const &);
 
     std::vector<std::size_t> const tiles;
     std::size_t const size;
@@ -36,7 +37,11 @@ public:
     std::size_t h;  // heuristic
     std::size_t f;  // score = cost + heuristic
 
+    std::size_t id;
+    static std::size_t inst;
+
 private:
+
     bool check_tiles(void) const ;
     void move(int direction);
 
