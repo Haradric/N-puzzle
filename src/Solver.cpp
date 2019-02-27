@@ -32,7 +32,7 @@ Puzzle const *Solver::search(void) {
     while (!open_list.empty()) {
 
 //        std::cout << graph() << std::endl;
-        auto it = std::min_element(open_list.begin(), open_list.end(), comp_f);// find_next_uc();
+        auto it = std::min_element(open_list.begin(), open_list.end(), comp_f);
         Puzzle *current = it->second;
         if (current->tiles == goal.tiles) {
 //            std::cout << graph() << std::endl;
@@ -240,8 +240,3 @@ bool  Solver::comp_f(solver_entry const & p1, solver_entry const & p2) {
 
     return (p1.second->f < p2.second->f);
 }
-
-//Puzzle & Solver::find_next_uc(void) {
-//
-//    return (std::max_element(open_list.begin(), open_list.end(), comp_f));
-//}

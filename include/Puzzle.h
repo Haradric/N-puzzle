@@ -31,19 +31,18 @@ public:
 
     std::vector<std::size_t> const tiles;
     std::size_t const size;
-    Puzzle            *parent;
+    Puzzle *parent;
 
+    std::size_t id;
     std::size_t g;  // cost
     std::size_t h;  // heuristic
     std::size_t f;  // score = cost + heuristic
 
-    std::size_t id;
     static std::size_t inst;
 
 private:
 
     bool check_tiles(void) const ;
-    void move(int direction);
 
 };
 
