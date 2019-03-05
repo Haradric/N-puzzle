@@ -108,12 +108,11 @@ std::string Solver::graph(void) const {
     ss << "strict digraph G {" << std::endl;
 
     for (auto it = open_list.begin(); it != open_list.end(); it++) {
-        ss << "    " << it->second->graph() << ";" << std::endl;
+        ss << "    " << it->second->graph(0) << std::endl;
     }
 
     for (auto it = closed_list.begin(); it != closed_list.end(); it++) {
-        ss << "    " << it->second->graph() << std::endl;
-        ss << "    \"" << *(it->second) << "\" [style=filled];" << std::endl;
+        ss << "    " << it->second->graph(1) << std::endl;
     }
 
     ss << "}" << std::endl;

@@ -52,26 +52,34 @@ void Puzzle::updateScore(heuristic f, Puzzle const & goal) {
     this->f = this->g + this->h;
 }
 
-std::string Puzzle::graph(void) const {
+std::string Puzzle::graph(bool closed) const {
 
     std::stringstream ss;
+    std::stringstream state;
+    std::stringstream state_parent;
+    std::stringstream label;
+    std::stringstream dbg_info;
 
-    ss << "\"";
-    ss << *this;
-    ss << "g:" << this->g << "  h:" << this->h << std::endl;
-    ss << "f:" << this->f << " id:" << this->id << std::endl;
-    ss << "\"";
+//    dbg_info << "\nid: " << id << "\n g : " << g << "\n h : " << h << "\n f : " << f;
+    for (auto it = tiles.begin(); it != tiles.end(); it++) {
+        state << *it;
+    }
 
-    if (!parent)
-        return (ss.str());
+    if (parent) {
+        for (auto it = parent->tiles.begin(); it != parent->tiles.end(); it++) {
+            state_parent << *it;
+        }
+    }
 
-    ss << " -> ";
+    label << state.str() << " [label = \"" << *this << dbg_info.str() << "\"";
 
-    ss << "\"";
-    ss << *parent;
-    ss << "g:" << parent->g << "  h:" << parent->h << std::endl;
-    ss << "f:" << parent->f << " id:" << parent->id << std::endl;
-    ss << "\"";
+    if (closed)
+        label << ", style=filled";
+    label << "]";
+
+    ss << label.str() << std::endl;
+    if (parent)
+        ss << state.str() << " -> " << state_parent.str() << ";" << std::endl;
 
     return (ss.str());
 }
