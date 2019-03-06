@@ -6,6 +6,7 @@
 #include <cstddef>
 #include <vector>
 #include <map>
+#include <queue>
 #include <memory>
 
 class Solver {
@@ -29,20 +30,23 @@ public:
 
 private:
 
-    typedef std::pair<std::size_t, Puzzle *> solver_entry;
+    struct compare_score {
+        bool operator() (Puzzle const *p1, Puzzle const *p2) const { return (p1->f >= p2->f); }
+    };
 
     std::vector<std::size_t> generate_solved_map(int size);
     void discover_node(Puzzle const &);
     void report(void);
-    static bool comp_f(solver_entry const &, solver_entry const &);
 
     Puzzle initial;
     Puzzle goal;
 
     Puzzle::heuristic const h;
 
+    std::priority_queue<Puzzle *, std::vector<Puzzle *>, compare_score> open_queue;
     std::map<std::size_t, Puzzle *> open_list;
     std::map<std::size_t, Puzzle *> closed_list;
+
     Puzzle *solution;
 
 };

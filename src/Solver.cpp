@@ -13,8 +13,9 @@ Solver::Solver(int size, std::vector<std::size_t> tiles, Puzzle::heuristic f) : 
     Puzzle * copy = new Puzzle(initial.size, initial.tiles);
     copy->updateScore(h, goal);
 
-    solver_entry entry(Puzzle::hash(*copy), copy);
+    std::pair<std::size_t, Puzzle *> entry(Puzzle::hash(*copy), copy);
     open_list.insert(entry);
+    open_queue.push(copy);
 }
 
 Solver::~Solver(void) {
@@ -32,18 +33,17 @@ void Solver::search(void) {
 
     while (!open_list.empty()) {
 
-//        std::cout << graph() << std::endl;
-        auto it = std::min_element(open_list.begin(), open_list.end(), comp_f);
-        Puzzle *current = it->second;
+        Puzzle *current = open_queue.top();
         if (current->tiles == goal.tiles) {
-//            std::cout << graph() << std::endl;
             solution = current;
             report();
             return ;
         }
 
+        auto it = open_list.find(Puzzle::hash(*current));
         closed_list.insert(*it);
         open_list.erase(it);
+        open_queue.pop();
 
         discover_node(*current);
     }
@@ -74,10 +74,11 @@ void Solver::discover_node(Puzzle const &puzzle) {
             continue ;
 
         it = open_list.find(hash);
-        if (it == open_list.end())
-            open_list.insert(solver_entry(hash, neighbor.release()));
-        else if (neighbor.get()->g < it->second->g)
-            *(it->second) = *(neighbor.get());
+        if (it == open_list.end()) {
+            open_list.insert(std::pair<std::size_t, Puzzle *>(hash, neighbor.get()));
+            open_queue.push(neighbor.get());
+            neighbor.release();
+        }
     }
 }
 
@@ -95,7 +96,7 @@ void Solver::report(void) {
         std::cout << **it << std::endl;
     }
 
-    std::cout << "complexity in time: " << open_list.size() << std::endl;
+    std::cout << "complexity in time: " << std::endl; // ??
     std::cout << "complexity in size: " << std::endl; // ??
     std::cout << "number of moves:    " << states.size() - 1 << std::endl;
 
@@ -256,9 +257,4 @@ std::vector<std::size_t> Solver::generate_solved_map(int size) {
     tiles[std::distance(tiles.begin(), max)] = 0;
 
     return (tiles);
-}
-
-bool  Solver::comp_f(solver_entry const & p1, solver_entry const & p2) {
-
-    return (p1.second->f < p2.second->f);
 }
