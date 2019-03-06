@@ -294,6 +294,11 @@ int  Solver::LinearConflict(Puzzle const & p1, Puzzle const & p2) {
     return (ManhattanDistance(p1, p2) + 2 * linear);
 }
 
+int  Solver::Mixed(Puzzle const & p1, Puzzle const & p2) {
+
+    return (MisplacedTiles(p1, p2) + LinearConflict(p1, p2));
+}
+
 std::vector<std::size_t> Solver::generate_solved_map(int size) {
 
     std::vector<std::size_t> tiles;

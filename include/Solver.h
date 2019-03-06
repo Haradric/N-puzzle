@@ -25,6 +25,7 @@ public:
     static int  MisplacedTiles(Puzzle const & p1, Puzzle const & p2);
     static int  ManhattanDistance(Puzzle const & p1, Puzzle const & p2);
     static int  LinearConflict(Puzzle const & p1, Puzzle const & p2);
+    static int  Mixed(Puzzle const & p1, Puzzle const & p2);
 
 private:
 

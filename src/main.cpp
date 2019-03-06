@@ -99,7 +99,7 @@ int main(int ac, const char **av) {
 //        }
 //        std::cout << "};" << std::endl;
 
-        Solver solver(size, tiles, Solver::LinearConflict);
+        Solver solver(size, tiles, Solver::Mixed);
         solver.search();
         std::cout << solver.report();
 //        std::cout << solver.graph();
