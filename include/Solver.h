@@ -38,16 +38,14 @@ private:
     void discover_node(Puzzle const &);
     void report(void);
 
-    Puzzle initial;
-    Puzzle goal;
+    Puzzle *initial;
+    Puzzle *goal;
 
     Puzzle::heuristic const h;
 
     std::priority_queue<Puzzle *, std::vector<Puzzle *>, compare_score> open_queue;
     std::map<std::size_t, Puzzle *> open_list;
     std::map<std::size_t, Puzzle *> closed_list;
-
-    Puzzle *solution;
 
 };
 

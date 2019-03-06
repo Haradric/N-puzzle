@@ -5,16 +5,19 @@
 #include <algorithm>
 #include <sstream>
 
-Solver::Solver(int size, std::vector<std::size_t> tiles, Puzzle::heuristic f) : initial(size, tiles), goal(size, generate_solved_map(size)), h(f), solution(nullptr) {
+Solver::Solver(int size, std::vector<std::size_t> tiles, Puzzle::heuristic f) : h(f) {
 
-    if (initial.isSolvable() != goal.isSolvable())
+    initial = new Puzzle(size, tiles);
+    goal    = new Puzzle(size, generate_solved_map(size));
+
+    initial->updateScore(h, *goal);
+
+    if (initial->isSolvable() != goal->isSolvable())
         throw std::runtime_error("this puzzle is unsolvable");
 
-    Puzzle * copy = new Puzzle(initial.size, initial.tiles);
-    copy->updateScore(h, goal);
+    Puzzle *copy = new Puzzle(*initial);
 
-    std::pair<std::size_t, Puzzle *> entry(Puzzle::hash(*copy), copy);
-    open_list.insert(entry);
+    open_list.insert(std::pair<std::size_t, Puzzle *>(Puzzle::hash(*copy), copy));
     open_queue.push(copy);
 }
 
@@ -27,6 +30,9 @@ Solver::~Solver(void) {
     for (auto it = closed_list.begin(); it != closed_list.end(); it++)
         delete (*it).second;
     closed_list.clear();
+
+    delete initial;
+    delete goal;
 }
 
 void Solver::search(void) {
@@ -34,8 +40,8 @@ void Solver::search(void) {
     while (!open_list.empty()) {
 
         Puzzle *current = open_queue.top();
-        if (current->tiles == goal.tiles) {
-            solution = current;
+        if (current->tiles == goal->tiles) {
+            *goal = *current;
             report();
             return ;
         }
@@ -62,7 +68,7 @@ void Solver::discover_node(Puzzle const &puzzle) {
             neighbor.reset(new Puzzle(puzzle.size, puzzle.neighbor(i)));
             neighbor->parent = const_cast<Puzzle *>(&puzzle);
             neighbor->g = puzzle.g + 1;
-            neighbor->updateScore(h, goal);
+            neighbor->updateScore(h, *goal);
         } catch (...) {
             continue ;
         }
@@ -84,10 +90,9 @@ void Solver::discover_node(Puzzle const &puzzle) {
 
 void Solver::report(void) {
 
-//    if (solution == nullptr)
     std::list<Puzzle *> states;
 
-    states.push_front(solution);
+    states.push_front(goal);
     while (states.front()->parent != nullptr) {
         states.push_front(states.front()->parent);
     }
