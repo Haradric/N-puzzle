@@ -146,8 +146,8 @@ int  Solver::MisplacedTiles(Puzzle const & p1, Puzzle const & p2) {
 
 int Solver::ManhattanDistance(Puzzle const & p1, Puzzle const & p2) {
 
-    std::vector<std::size_t> t1 = p1.tiles;
-    std::vector<std::size_t> t2 = p2.tiles;
+    std::vector<std::size_t> const &t1 = p1.tiles;
+    std::vector<std::size_t> const &t2 = p2.tiles;
     std::size_t size = p1.size;
     std::size_t sum  = 0;
 
@@ -172,8 +172,8 @@ int Solver::ManhattanDistance(Puzzle const & p1, Puzzle const & p2) {
 
 int  Solver::LinearConflict(Puzzle const & p1, Puzzle const & p2) {
 
-    std::vector<std::size_t> t1 = p1.tiles;
-    std::vector<std::size_t> t2 = p2.tiles;
+    std::vector<std::size_t> const &t1 = p1.tiles;
+    std::vector<std::size_t> const &t2 = p2.tiles;
     std::size_t size    = p1.size;
     std::size_t linear  = 0;
 
