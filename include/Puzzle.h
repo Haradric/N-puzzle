@@ -21,7 +21,6 @@ public:
     bool isSolvable(void) const ;
     void updateScore(heuristic f, Puzzle const & goal);
 
-    std::string graph(bool closed) const;
     std::vector<std::size_t> neighbor(int direction) const ;
 
     Puzzle & operator = (Puzzle const & target);

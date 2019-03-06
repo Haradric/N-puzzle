@@ -52,38 +52,6 @@ void Puzzle::updateScore(heuristic f, Puzzle const & goal) {
     this->f = this->g + this->h;
 }
 
-std::string Puzzle::graph(bool closed) const {
-
-    std::stringstream ss;
-    std::stringstream state;
-    std::stringstream state_parent;
-    std::stringstream label;
-    std::stringstream dbg_info;
-
-//    dbg_info << "\nid: " << id << "\n g : " << g << "\n h : " << h << "\n f : " << f;
-    for (auto it = tiles.begin(); it != tiles.end(); it++) {
-        state << *it;
-    }
-
-    if (parent) {
-        for (auto it = parent->tiles.begin(); it != parent->tiles.end(); it++) {
-            state_parent << *it;
-        }
-    }
-
-    label << state.str() << " [label = \"" << *this << dbg_info.str() << "\"";
-
-    if (closed)
-        label << ", style=filled";
-    label << "]";
-
-    ss << label.str() << std::endl;
-    if (parent)
-        ss << state.str() << " -> " << state_parent.str() << ";" << std::endl;
-
-    return (ss.str());
-}
-
 std::vector<std::size_t> Puzzle::neighbor(int direction) const {
 
     std::vector<std::size_t> neighbor(tiles);

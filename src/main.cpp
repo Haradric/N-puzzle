@@ -99,14 +99,10 @@ int main(int ac, const char **av) {
 //        }
 //        std::cout << "};" << std::endl;
 
-//        Solver solver(3, solvable3, Solver::LinearConflict);
-//        Solver solver(4, solvable4, Solver::LinearConflict);
-//        Solver solver(5, solvable5, Solver::LinearConflict);
-//        Solver solver(6, solvable6, Solver::LinearConflict);
-//        Solver solver(7, solvable7, Solver::LinearConflict);
         Solver solver(size, tiles, Solver::LinearConflict);
         solver.search();
-        std::cout << solver.graph() << std::endl;
+        std::cout << solver.report();
+//        std::cout << solver.graph();
 
     } catch (std::exception & e) {
         std::cerr << "Error: " << e.what() << std::endl;

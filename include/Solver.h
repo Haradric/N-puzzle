@@ -16,10 +16,8 @@ public:
     Solver(int size, std::vector<std::size_t> tiles, Puzzle::heuristic f);
     ~Solver(void);
 
-    void init(int size, std::vector<std::size_t> tiles, Puzzle::heuristic f);
-
     void search(void);
-
+    std::string report(void) const;
     std::string graph(void) const;
 
     // h(x)
@@ -37,7 +35,8 @@ private:
     std::vector<std::size_t> generate_solved_map(int size);
     std::size_t hash(Puzzle const &);
     void discover_node(Puzzle const &);
-    void report(void);
+    std::string graph_node_view(Puzzle const & p, bool closed) const ;
+    std::string graph_node_connection(Puzzle const & p) const ;
 
     Puzzle *initial;
     Puzzle *goal;
@@ -47,6 +46,8 @@ private:
     std::priority_queue<Puzzle *, std::vector<Puzzle *>, compare_score> open_queue;
     std::map<std::size_t, Puzzle *> open_list;
     std::map<std::size_t, Puzzle *> closed_list;
+    std::size_t time_complexity;
+    std::size_t size_complexity;
 
 };
 

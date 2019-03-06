@@ -5,7 +5,7 @@
 #include <algorithm>
 #include <sstream>
 
-Solver::Solver(int size, std::vector<std::size_t> tiles, Puzzle::heuristic f) : h(f) {
+Solver::Solver(int size, std::vector<std::size_t> tiles, Puzzle::heuristic f) : h(f), time_complexity(0), size_complexity(0) {
 
     initial = new Puzzle(size, tiles);
     goal    = new Puzzle(size, generate_solved_map(size));
@@ -19,6 +19,7 @@ Solver::Solver(int size, std::vector<std::size_t> tiles, Puzzle::heuristic f) : 
 
     open_list.insert(std::pair<std::size_t, Puzzle *>(hash(*copy), copy));
     open_queue.push(copy);
+    time_complexity++;
 }
 
 Solver::~Solver(void) {
@@ -42,7 +43,6 @@ void Solver::search(void) {
         Puzzle *current = open_queue.top();
         if (current->tiles == goal->tiles) {
             *goal = *current;
-            report();
             return ;
         }
 
@@ -52,6 +52,7 @@ void Solver::search(void) {
         open_queue.pop();
 
         discover_node(*current);
+        size_complexity = (open_list.size() > size_complexity) ? open_list.size() : size_complexity;
     }
     throw std::runtime_error("can't find solution");
 }
@@ -67,7 +68,7 @@ void Solver::discover_node(Puzzle const &puzzle) {
         try {
             neighbor.reset(new Puzzle(puzzle.size, puzzle.neighbor(i)));
             neighbor->parent = const_cast<Puzzle *>(&puzzle);
-            neighbor->g = puzzle.g + 1;
+            neighbor->g = puzzle.g + 0;
             neighbor->updateScore(h, *goal);
         } catch (...) {
             continue ;
@@ -83,13 +84,15 @@ void Solver::discover_node(Puzzle const &puzzle) {
         if (it == open_list.end()) {
             open_list.insert(std::pair<std::size_t, Puzzle *>(hash, neighbor.get()));
             open_queue.push(neighbor.get());
+            time_complexity++;
             neighbor.release();
         }
     }
 }
 
-void Solver::report(void) {
+std::string Solver::report(void) const {
 
+    std::stringstream ss;
     std::list<Puzzle *> states;
 
     states.push_front(goal);
@@ -98,27 +101,94 @@ void Solver::report(void) {
     }
 
     for (auto it = states.begin(); it != states.end(); it++) {
-        std::cout << **it << std::endl;
+        ss << **it << std::endl;
     }
 
-    std::cout << "complexity in time: " << std::endl; // ??
-    std::cout << "complexity in size: " << std::endl; // ??
-    std::cout << "number of moves:    " << states.size() - 1 << std::endl;
+    ss << "complexity in time: " << time_complexity << std::endl;
+    ss << "complexity in size: " << size_complexity << std::endl;
+    ss << "number of moves:    " << states.size() - 1 << std::endl;
 
+    return (ss.str());
+}
+
+std::string Solver::graph_node_view(Puzzle const & p, bool closed) const {
+
+    std::stringstream ss;
+    std::stringstream dbg_info;
+
+    //    dbg_info << "|{id: " << id << "|g : " << g << "|h : " << h << "|f : " << f << "}";
+    for (auto it = p.tiles.begin(); it != p.tiles.end(); it++) {
+        ss << *it;
+    }
+
+    ss << " [label = \"{";
+    for (auto i = 0; i < p.size; i++) {
+        ss << "{";
+        for (auto j = 0; j < p.size; j++) {
+            ss << p.tiles[j * p.size + i];
+            if (j != p.size - 1)
+                ss << "|";
+        }
+        ss << "}";
+        if (i != p.size - 1)
+            ss << "|";
+    }
+
+    ss << "}" << dbg_info.str() << "\"";
+    if (closed)
+        ss << ", style=filled";
+    ss << "]";
+
+    return (ss.str());
+}
+
+std::string Solver::graph_node_connection(Puzzle const & p) const {
+
+    std::stringstream ss;
+
+    if (!goal->parent)
+        throw std::runtime_error("this puzzle is not solved yet");
+
+    for (auto it = p.tiles.begin(); it != p.tiles.end(); it++) {
+        ss << *it;
+    }
+
+    ss << " -> ";
+
+    for (auto it = p.parent->tiles.begin(); it != p.parent->tiles.end(); it++) {
+        ss << *it;
+    }
+
+    return (ss.str());
 }
 
 std::string Solver::graph(void) const {
 
     std::stringstream ss;
 
+    if (!goal->parent)
+        throw std::runtime_error("this puzzle is not solved yet");
+
     ss << "strict digraph G {" << std::endl;
+    ss << "    rankdir=RL" << std::endl;
+    ss << "    node [shape=Mrecord];" << std::endl;
+
+    for (auto it = closed_list.begin(); it != closed_list.end(); it++) {
+        ss << "    " << graph_node_view(*(it->second), 1) << std::endl;
+    }
 
     for (auto it = open_list.begin(); it != open_list.end(); it++) {
-        ss << "    " << it->second->graph(0) << std::endl;
+        ss << "    " << graph_node_view(*(it->second), 0) << std::endl;
     }
 
     for (auto it = closed_list.begin(); it != closed_list.end(); it++) {
-        ss << "    " << it->second->graph(1) << std::endl;
+        if (it->second->parent)
+            ss << "    " << graph_node_connection(*(it->second)) << std::endl;
+    }
+
+    for (auto it = open_list.begin(); it != open_list.end(); it++) {
+        if (it->second->parent)
+            ss << "    " << graph_node_connection(*(it->second)) << std::endl;
     }
 
     ss << "}" << std::endl;
@@ -134,8 +204,8 @@ bool Solver::CheckParity(Puzzle const & p1, Puzzle const & p2) {
 
 int  Solver::MisplacedTiles(Puzzle const & p1, Puzzle const & p2) {
 
-    std::vector<std::size_t> t1 = p1.tiles;
-    std::vector<std::size_t> t2 = p2.tiles;
+    std::vector<std::size_t> const &t1 = p1.tiles;
+    std::vector<std::size_t> const &t2 = p2.tiles;
     std::size_t sum = 0;
 
     if (p1.size != p2.size)
