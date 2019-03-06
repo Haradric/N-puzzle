@@ -142,17 +142,6 @@ bool Puzzle::operator == (Puzzle const & target) const {
             f == target.f);
 }
 
-std::size_t Puzzle::hash(Puzzle const & puzzle) {
-
-    std::size_t seed = puzzle.size;
-
-    for(auto it = puzzle.tiles.begin(); it != puzzle.tiles.end(); it++) {
-        seed ^= *it + 0x9e3779b9 + (seed << 6) + (seed >> 2);
-    }
-
-    return (seed);
-}
-
 bool Puzzle::check_tiles(void) const {
 
     std::vector<std::size_t> copy(tiles), sorted(size * size);

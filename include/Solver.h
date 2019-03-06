@@ -35,6 +35,7 @@ private:
     };
 
     std::vector<std::size_t> generate_solved_map(int size);
+    std::size_t hash(Puzzle const &);
     void discover_node(Puzzle const &);
     void report(void);
 

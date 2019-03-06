@@ -27,8 +27,6 @@ public:
     Puzzle & operator = (Puzzle const & target);
     bool     operator == (Puzzle const & target) const ;
 
-    static std::size_t hash(Puzzle const &);
-
     std::vector<std::size_t> const tiles;
     std::size_t const size;
     Puzzle *parent;

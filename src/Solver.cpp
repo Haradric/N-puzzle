@@ -17,7 +17,7 @@ Solver::Solver(int size, std::vector<std::size_t> tiles, Puzzle::heuristic f) : 
 
     Puzzle *copy = new Puzzle(*initial);
 
-    open_list.insert(std::pair<std::size_t, Puzzle *>(Puzzle::hash(*copy), copy));
+    open_list.insert(std::pair<std::size_t, Puzzle *>(hash(*copy), copy));
     open_queue.push(copy);
 }
 
@@ -46,7 +46,7 @@ void Solver::search(void) {
             return ;
         }
 
-        auto it = open_list.find(Puzzle::hash(*current));
+        auto it = open_list.find(hash(*current));
         closed_list.insert(*it);
         open_list.erase(it);
         open_queue.pop();
@@ -73,7 +73,7 @@ void Solver::discover_node(Puzzle const &puzzle) {
             continue ;
         }
 
-        hash = Puzzle::hash(*(neighbor.get()));
+        hash = Solver::hash(*(neighbor.get()));
 
         it = closed_list.find(hash);
         if (it != closed_list.end())
@@ -262,4 +262,15 @@ std::vector<std::size_t> Solver::generate_solved_map(int size) {
     tiles[std::distance(tiles.begin(), max)] = 0;
 
     return (tiles);
+}
+
+std::size_t Solver::hash(Puzzle const & puzzle) {
+
+    std::size_t seed = puzzle.size;
+
+    for(auto it = puzzle.tiles.begin(); it != puzzle.tiles.end(); it++) {
+        seed ^= *it + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+    }
+
+    return (seed);
 }
