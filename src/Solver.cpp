@@ -3,17 +3,22 @@
 
 #include <list>
 #include <algorithm>
+#include <memory>
 #include <sstream>
+
 
 Solver::Solver(int size, std::vector<std::size_t> tiles, Puzzle::heuristic f) : h(f), time_complexity(0), size_complexity(0) {
 
-    initial = new Puzzle(size, tiles);
-    goal    = new Puzzle(size, generate_solved_map(size));
+    std::unique_ptr<Puzzle> init_ptr(new Puzzle(size, tiles));
+    std::unique_ptr<Puzzle> goal_ptr(new Puzzle(size, generate_solved_map(size)));
+
+    if (init_ptr.get()->isSolvable() != goal_ptr.get()->isSolvable())
+        throw std::runtime_error("this puzzle is unsolvable");
+
+    initial = init_ptr.release();
+    goal    = goal_ptr.release();
 
     initial->updateScore(h, *goal);
-
-    if (initial->isSolvable() != goal->isSolvable())
-        throw std::runtime_error("this puzzle is unsolvable");
 
     Puzzle *copy = new Puzzle(*initial);
 
