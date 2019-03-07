@@ -269,207 +269,406 @@ TEST(SolverClass, Negative_LinearConflict) {
     EXPECT_EQ(Solver::LinearConflict(b7, b3), -1);
 }
 
-TEST(SolverClass, method_search_is_solvable) {
+TEST(SolverClass, Positive_isSolvable) {
 
     EXPECT_NO_THROW(Solver solver(3, blank3, Solver::MisplacedTiles));
     EXPECT_NO_THROW(Solver solver(3, blank3, Solver::ManhattanDistance));
     EXPECT_NO_THROW(Solver solver(3, blank3, Solver::LinearConflict));
+    EXPECT_NO_THROW(Solver solver(3, blank3, Solver::Mixed));
 
     EXPECT_NO_THROW(Solver solver(3, solvable3, Solver::MisplacedTiles));
     EXPECT_NO_THROW(Solver solver(3, solvable3, Solver::ManhattanDistance));
     EXPECT_NO_THROW(Solver solver(3, solvable3, Solver::LinearConflict));
+    EXPECT_NO_THROW(Solver solver(3, solvable3, Solver::Mixed));
+
+    EXPECT_NO_THROW(Solver solver(4, blank4, Solver::MisplacedTiles));
+    EXPECT_NO_THROW(Solver solver(4, blank4, Solver::ManhattanDistance));
+    EXPECT_NO_THROW(Solver solver(4, blank4, Solver::LinearConflict));
+    EXPECT_NO_THROW(Solver solver(4, blank4, Solver::Mixed));
+
+    EXPECT_NO_THROW(Solver solver(4, solvable4, Solver::MisplacedTiles));
+    EXPECT_NO_THROW(Solver solver(4, solvable4, Solver::ManhattanDistance));
+    EXPECT_NO_THROW(Solver solver(4, solvable4, Solver::LinearConflict));
+    EXPECT_NO_THROW(Solver solver(4, solvable4, Solver::Mixed));
+
+    EXPECT_NO_THROW(Solver solver(5, blank5, Solver::MisplacedTiles));
+    EXPECT_NO_THROW(Solver solver(5, blank5, Solver::ManhattanDistance));
+    EXPECT_NO_THROW(Solver solver(5, blank5, Solver::LinearConflict));
+    EXPECT_NO_THROW(Solver solver(5, blank5, Solver::Mixed));
+
+    EXPECT_NO_THROW(Solver solver(5, solvable5, Solver::MisplacedTiles));
+    EXPECT_NO_THROW(Solver solver(5, solvable5, Solver::ManhattanDistance));
+    EXPECT_NO_THROW(Solver solver(5, solvable5, Solver::LinearConflict));
+    EXPECT_NO_THROW(Solver solver(5, solvable5, Solver::Mixed));
+
+    EXPECT_NO_THROW(Solver solver(6, blank6, Solver::MisplacedTiles));
+    EXPECT_NO_THROW(Solver solver(6, blank6, Solver::ManhattanDistance));
+    EXPECT_NO_THROW(Solver solver(6, blank6, Solver::LinearConflict));
+    EXPECT_NO_THROW(Solver solver(6, blank6, Solver::Mixed));
+
+    EXPECT_NO_THROW(Solver solver(6, solvable6, Solver::MisplacedTiles));
+    EXPECT_NO_THROW(Solver solver(6, solvable6, Solver::ManhattanDistance));
+    EXPECT_NO_THROW(Solver solver(6, solvable6, Solver::LinearConflict));
+    EXPECT_NO_THROW(Solver solver(6, solvable6, Solver::Mixed));
+
+    EXPECT_NO_THROW(Solver solver(7, blank7, Solver::MisplacedTiles));
+    EXPECT_NO_THROW(Solver solver(7, blank7, Solver::ManhattanDistance));
+    EXPECT_NO_THROW(Solver solver(7, blank7, Solver::LinearConflict));
+    EXPECT_NO_THROW(Solver solver(7, blank7, Solver::Mixed));
+
+    EXPECT_NO_THROW(Solver solver(7, solvable7, Solver::MisplacedTiles));
+    EXPECT_NO_THROW(Solver solver(7, solvable7, Solver::ManhattanDistance));
+    EXPECT_NO_THROW(Solver solver(7, solvable7, Solver::LinearConflict));
+    EXPECT_NO_THROW(Solver solver(7, solvable7, Solver::Mixed));
+}
+
+TEST(SolverClass, Negative_isSolvable) {
 
     EXPECT_THROW(Solver solver(3, unsolvable3, Solver::MisplacedTiles), std::exception);
     EXPECT_THROW(Solver solver(3, unsolvable3, Solver::ManhattanDistance), std::exception);
     EXPECT_THROW(Solver solver(3, unsolvable3, Solver::LinearConflict), std::exception);
+    EXPECT_THROW(Solver solver(3, unsolvable3, Solver::Mixed), std::exception);
+
+    EXPECT_THROW(Solver solver(4, unsolvable4, Solver::MisplacedTiles), std::exception);
+    EXPECT_THROW(Solver solver(4, unsolvable4, Solver::ManhattanDistance), std::exception);
+    EXPECT_THROW(Solver solver(4, unsolvable4, Solver::LinearConflict), std::exception);
+    EXPECT_THROW(Solver solver(4, unsolvable4, Solver::Mixed), std::exception);
+
+    EXPECT_THROW(Solver solver(5, unsolvable5, Solver::MisplacedTiles), std::exception);
+    EXPECT_THROW(Solver solver(5, unsolvable5, Solver::ManhattanDistance), std::exception);
+    EXPECT_THROW(Solver solver(5, unsolvable5, Solver::LinearConflict), std::exception);
+    EXPECT_THROW(Solver solver(5, unsolvable5, Solver::Mixed), std::exception);
+
+    EXPECT_THROW(Solver solver(6, unsolvable6, Solver::MisplacedTiles), std::exception);
+    EXPECT_THROW(Solver solver(6, unsolvable6, Solver::ManhattanDistance), std::exception);
+    EXPECT_THROW(Solver solver(6, unsolvable6, Solver::LinearConflict), std::exception);
+    EXPECT_THROW(Solver solver(6, unsolvable6, Solver::Mixed), std::exception);
+
+    EXPECT_THROW(Solver solver(7, unsolvable7, Solver::MisplacedTiles), std::exception);
+    EXPECT_THROW(Solver solver(7, unsolvable7, Solver::ManhattanDistance), std::exception);
+    EXPECT_THROW(Solver solver(7, unsolvable7, Solver::LinearConflict), std::exception);
+    EXPECT_THROW(Solver solver(7, unsolvable7, Solver::Mixed), std::exception);
 }
 
-TEST(SolverClass, method_search_3x3) {
+TEST(SolverClass, search_3x3_MisplacedTiles) {
 
-    Solver *solver;
-    std::vector<std::size_t> result;
+    std::vector<std::size_t> puzzle1 = { 1, 4, 2, 7, 0, 3, 6, 8, 5 };
+    std::vector<std::size_t> puzzle2 = { 5, 6, 4, 1, 3, 2, 8, 7, 0 };
+    std::vector<std::size_t> puzzle3 = { 7, 2, 0, 6, 1, 4, 5, 3, 8 };
 
-    solver = new Solver(3, blank3, Solver::MisplacedTiles);
-    result = (*(solver->search())).tiles;
-    EXPECT_EQ(result, blank3);
-    delete solver;
+    Solver solver1(3, puzzle1, Solver::MisplacedTiles);
+    Solver solver2(3, puzzle2, Solver::MisplacedTiles);
+    Solver solver3(3, puzzle3, Solver::MisplacedTiles);
 
-    solver = new Solver(3, blank3, Solver::ManhattanDistance);
-    result = (*(solver->search())).tiles;
-    EXPECT_EQ(result, blank3);
-    delete solver;
-
-    solver = new Solver(3, blank3, Solver::LinearConflict);
-    result = (*(solver->search())).tiles;
-    EXPECT_EQ(result, blank3);
-    delete solver;
-
-
-
-    solver = new Solver(3, solvable3, Solver::MisplacedTiles);
-    result = (*(solver->search())).tiles;
-    EXPECT_EQ(result, blank3);
-    delete solver;
-
-    solver = new Solver(3, solvable3, Solver::ManhattanDistance);
-    result = (*(solver->search())).tiles;
-    EXPECT_EQ(result, blank3);
-    delete solver;
-
-    solver = new Solver(3, solvable3, Solver::LinearConflict);
-    result = (*(solver->search())).tiles;
-    EXPECT_EQ(result, blank3);
-    delete solver;
+    EXPECT_NO_THROW(solver1.search());
+    EXPECT_NO_THROW(solver2.search());
+    EXPECT_NO_THROW(solver3.search());
 }
 
-TEST(SolverClass, method_search_4x4) {
+TEST(SolverClass, search_3x3_ManhattanDistance) {
 
-    Solver *solver;
-    std::vector<std::size_t> result;
+    std::vector<std::size_t> puzzle1 = { 1, 4, 2, 7, 0, 3, 6, 8, 5 };
+    std::vector<std::size_t> puzzle2 = { 5, 6, 4, 1, 3, 2, 8, 7, 0 };
+    std::vector<std::size_t> puzzle3 = { 7, 2, 0, 6, 1, 4, 5, 3, 8 };
 
-    solver = new Solver(4, blank4, Solver::MisplacedTiles);
-    result = (*(solver->search())).tiles;
-    EXPECT_EQ(result, blank4);
-    delete solver;
+    Solver solver1(3, puzzle1, Solver::ManhattanDistance);
+    Solver solver2(3, puzzle2, Solver::ManhattanDistance);
+    Solver solver3(3, puzzle3, Solver::ManhattanDistance);
 
-    solver = new Solver(4, blank4, Solver::ManhattanDistance);
-    result = (*(solver->search())).tiles;
-    EXPECT_EQ(result, blank4);
-    delete solver;
-
-    solver = new Solver(4, blank4, Solver::LinearConflict);
-    result = (*(solver->search())).tiles;
-    EXPECT_EQ(result, blank4);
-    delete solver;
-
-
-
-    solver = new Solver(4, solvable4, Solver::MisplacedTiles);
-    result = (*(solver->search())).tiles;
-    EXPECT_EQ(result, blank4);
-    delete solver;
-
-    solver = new Solver(4, solvable4, Solver::ManhattanDistance);
-    result = (*(solver->search())).tiles;
-    EXPECT_EQ(result, blank4);
-    delete solver;
-
-    solver = new Solver(4, solvable4, Solver::LinearConflict);
-    result = (*(solver->search())).tiles;
-    EXPECT_EQ(result, blank4);
-    delete solver;
+    EXPECT_NO_THROW(solver1.search());
+    EXPECT_NO_THROW(solver2.search());
+    EXPECT_NO_THROW(solver3.search());
 }
 
-//TEST(SolverClass, method_search_5x5) {
+TEST(SolverClass, search_3x3_LinearConflict) {
+
+    std::vector<std::size_t> puzzle1 = { 1, 4, 2, 7, 0, 3, 6, 8, 5 };
+    std::vector<std::size_t> puzzle2 = { 5, 6, 4, 1, 3, 2, 8, 7, 0 };
+    std::vector<std::size_t> puzzle3 = { 7, 2, 0, 6, 1, 4, 5, 3, 8 };
+
+    Solver solver1(3, puzzle1, Solver::LinearConflict);
+    Solver solver2(3, puzzle2, Solver::LinearConflict);
+    Solver solver3(3, puzzle3, Solver::LinearConflict);
+
+    EXPECT_NO_THROW(solver1.search());
+    EXPECT_NO_THROW(solver2.search());
+    EXPECT_NO_THROW(solver3.search());
+}
+
+TEST(SolverClass, search_3x3_Mixed) {
+
+    std::vector<std::size_t> puzzle1 = { 1, 4, 2, 7, 0, 3, 6, 8, 5 };
+    std::vector<std::size_t> puzzle2 = { 5, 6, 4, 1, 3, 2, 8, 7, 0 };
+    std::vector<std::size_t> puzzle3 = { 7, 2, 0, 6, 1, 4, 5, 3, 8 };
+
+    Solver solver1(3, puzzle1, Solver::Mixed);
+    Solver solver2(3, puzzle2, Solver::Mixed);
+    Solver solver3(3, puzzle3, Solver::Mixed);
+
+    EXPECT_NO_THROW(solver1.search());
+    EXPECT_NO_THROW(solver2.search());
+    EXPECT_NO_THROW(solver3.search());
+}
+
+TEST(SolverClass, search_4x4_MisplacedTiles) {
+
+    std::vector<std::size_t> puzzle1 = { 3,  4, 12,  1,  5,  8, 15,  9,  2, 10,  6, 13,  0, 14,  7, 11 };
+    std::vector<std::size_t> puzzle2 = { 9,  8, 11, 12,  6,  2, 14, 10, 15,  3,  7,  5,  4,  1,  0, 13 };
+    std::vector<std::size_t> puzzle3 = { 7,  2, 12,  0, 11, 14,  1,  4,  8, 13,  3, 10,  5,  6,  9, 15 };
+
+    Solver solver1(4, puzzle1, Solver::MisplacedTiles);
+    Solver solver2(4, puzzle2, Solver::MisplacedTiles);
+    Solver solver3(4, puzzle3, Solver::MisplacedTiles);
+
+    EXPECT_NO_THROW(solver1.search());
+    EXPECT_NO_THROW(solver2.search());
+    EXPECT_NO_THROW(solver3.search());
+}
+
+TEST(SolverClass, search_4x4_ManhattanDistance) {
+
+    std::vector<std::size_t> puzzle1 = { 3,  4, 12,  1,  5,  8, 15,  9,  2, 10,  6, 13,  0, 14,  7, 11 };
+    std::vector<std::size_t> puzzle2 = { 9,  8, 11, 12,  6,  2, 14, 10, 15,  3,  7,  5,  4,  1,  0, 13 };
+    std::vector<std::size_t> puzzle3 = { 7,  2, 12,  0, 11, 14,  1,  4,  8, 13,  3, 10,  5,  6,  9, 15 };
+
+    Solver solver1(4, puzzle1, Solver::ManhattanDistance);
+    Solver solver2(4, puzzle2, Solver::ManhattanDistance);
+    Solver solver3(4, puzzle3, Solver::ManhattanDistance);
+
+    EXPECT_NO_THROW(solver1.search());
+    EXPECT_NO_THROW(solver2.search());
+    EXPECT_NO_THROW(solver3.search());
+}
+
+TEST(SolverClass, search_4x4_LinearConflict) {
+
+    std::vector<std::size_t> puzzle1 = { 3,  4, 12,  1,  5,  8, 15,  9,  2, 10,  6, 13,  0, 14,  7, 11 };
+    std::vector<std::size_t> puzzle2 = { 9,  8, 11, 12,  6,  2, 14, 10, 15,  3,  7,  5,  4,  1,  0, 13 };
+    std::vector<std::size_t> puzzle3 = { 7,  2, 12,  0, 11, 14,  1,  4,  8, 13,  3, 10,  5,  6,  9, 15 };
+
+    Solver solver1(4, puzzle1, Solver::LinearConflict);
+    Solver solver2(4, puzzle2, Solver::LinearConflict);
+    Solver solver3(4, puzzle3, Solver::LinearConflict);
+
+    EXPECT_NO_THROW(solver1.search());
+    EXPECT_NO_THROW(solver2.search());
+    EXPECT_NO_THROW(solver3.search());
+}
+
+TEST(SolverClass, search_4x4_Mixed) {
+
+    std::vector<std::size_t> puzzle1 = { 3,  4, 12,  1,  5,  8, 15,  9,  2, 10,  6, 13,  0, 14,  7, 11 };
+    std::vector<std::size_t> puzzle2 = { 9,  8, 11, 12,  6,  2, 14, 10, 15,  3,  7,  5,  4,  1,  0, 13 };
+    std::vector<std::size_t> puzzle3 = { 7,  2, 12,  0, 11, 14,  1,  4,  8, 13,  3, 10,  5,  6,  9, 15 };
+
+    Solver solver1(4, puzzle1, Solver::Mixed);
+    Solver solver2(4, puzzle2, Solver::Mixed);
+    Solver solver3(4, puzzle3, Solver::Mixed);
+
+    EXPECT_NO_THROW(solver1.search());
+    EXPECT_NO_THROW(solver2.search());
+    EXPECT_NO_THROW(solver3.search());
+}
+
+TEST(SolverClass, search_5x5_MisplacedTiles) {
+
+    std::vector<std::size_t> puzzle1 = { 21,  4,  9,  5,  2, 22, 10, 23, 15, 20, 19,  7, 16, 17,  1, 14,  8,  6, 13,  3, 18, 24,  0, 11, 12 };
+    std::vector<std::size_t> puzzle2 = { 20,  1, 14, 17,  6,  7, 16,  2, 21,  3,  4, 22,  0, 15, 10,  5, 11, 18,  8, 23, 24, 19, 13,  9, 12 };
+    std::vector<std::size_t> puzzle3 = {  4, 14,  9, 16, 24,  7,  1,  3, 12, 21, 15, 19, 11, 18,  0, 13, 20, 10,  2, 22,  5, 17,  6, 23,  8 };
+
+    Solver solver1(5, puzzle1, Solver::MisplacedTiles);
+    Solver solver2(5, puzzle2, Solver::MisplacedTiles);
+    Solver solver3(5, puzzle3, Solver::MisplacedTiles);
+
+    EXPECT_NO_THROW(solver1.search());
+    EXPECT_NO_THROW(solver2.search());
+    EXPECT_NO_THROW(solver3.search());
+}
+
+TEST(SolverClass, search_5x5_ManhattanDistance) {
+
+    std::vector<std::size_t> puzzle1 = { 21,  4,  9,  5,  2, 22, 10, 23, 15, 20, 19,  7, 16, 17,  1, 14,  8,  6, 13,  3, 18, 24,  0, 11, 12 };
+    std::vector<std::size_t> puzzle2 = { 20,  1, 14, 17,  6,  7, 16,  2, 21,  3,  4, 22,  0, 15, 10,  5, 11, 18,  8, 23, 24, 19, 13,  9, 12 };
+    std::vector<std::size_t> puzzle3 = {  4, 14,  9, 16, 24,  7,  1,  3, 12, 21, 15, 19, 11, 18,  0, 13, 20, 10,  2, 22,  5, 17,  6, 23,  8 };
+
+    Solver solver1(5, puzzle1, Solver::ManhattanDistance);
+    Solver solver2(5, puzzle2, Solver::ManhattanDistance);
+    Solver solver3(5, puzzle3, Solver::ManhattanDistance);
+
+    EXPECT_NO_THROW(solver1.search());
+    EXPECT_NO_THROW(solver2.search());
+    EXPECT_NO_THROW(solver3.search());
+}
+
+TEST(SolverClass, search_5x5_LinearConflict) {
+
+    std::vector<std::size_t> puzzle1 = { 21,  4,  9,  5,  2, 22, 10, 23, 15, 20, 19,  7, 16, 17,  1, 14,  8,  6, 13,  3, 18, 24,  0, 11, 12 };
+    std::vector<std::size_t> puzzle2 = { 20,  1, 14, 17,  6,  7, 16,  2, 21,  3,  4, 22,  0, 15, 10,  5, 11, 18,  8, 23, 24, 19, 13,  9, 12 };
+    std::vector<std::size_t> puzzle3 = {  4, 14,  9, 16, 24,  7,  1,  3, 12, 21, 15, 19, 11, 18,  0, 13, 20, 10,  2, 22,  5, 17,  6, 23,  8 };
+
+    Solver solver1(5, puzzle1, Solver::LinearConflict);
+    Solver solver2(5, puzzle2, Solver::LinearConflict);
+    Solver solver3(5, puzzle3, Solver::LinearConflict);
+
+    EXPECT_NO_THROW(solver1.search());
+    EXPECT_NO_THROW(solver2.search());
+    EXPECT_NO_THROW(solver3.search());
+}
+
+TEST(SolverClass, search_5x5_Mixed) {
+
+    std::vector<std::size_t> puzzle1 = { 21,  4,  9,  5,  2, 22, 10, 23, 15, 20, 19,  7, 16, 17,  1, 14,  8,  6, 13,  3, 18, 24,  0, 11, 12 };
+    std::vector<std::size_t> puzzle2 = { 20,  1, 14, 17,  6,  7, 16,  2, 21,  3,  4, 22,  0, 15, 10,  5, 11, 18,  8, 23, 24, 19, 13,  9, 12 };
+    std::vector<std::size_t> puzzle3 = {  4, 14,  9, 16, 24,  7,  1,  3, 12, 21, 15, 19, 11, 18,  0, 13, 20, 10,  2, 22,  5, 17,  6, 23,  8 };
+
+    Solver solver1(5, puzzle1, Solver::Mixed);
+    Solver solver2(5, puzzle2, Solver::Mixed);
+    Solver solver3(5, puzzle3, Solver::Mixed);
+
+    EXPECT_NO_THROW(solver1.search());
+    EXPECT_NO_THROW(solver2.search());
+    EXPECT_NO_THROW(solver3.search());
+}
+
+//TEST(SolverClass, search_6x6_MisplacedTiles) {
 //
-//    Solver *solver;
-//    std::vector<std::size_t> result;
+//    std::vector<std::size_t> puzzle1 = {
+//        31,  6,  2,  0,  3,  7,
+//        15, 20,  5, 14, 13, 25,
+//        23,  1, 29, 17, 26, 19,
+//        10, 24,  4, 33, 12,  8,
+//        21, 35, 27, 11, 28, 32,
+//        22, 30, 16, 34, 18,  9,
+//    };
+//    std::vector<std::size_t> puzzle2 = {
+//        15,  8, 22, 26, 17, 25,
+//        27, 33,  0,  5, 14, 12,
+//         7, 35, 28, 21, 31, 23,
+//        32,  6, 34, 29,  2,  3,
+//        11, 10, 30, 18, 16,  9,
+//         4,  1, 20, 13, 19, 24
+//    };
+//    std::vector<std::size_t> puzzle3 = {
+//        31, 17, 12, 13,  8, 30,
+//        23, 10,  0, 32,  9, 33,
+//        11, 14, 25, 19,  6, 29,
+//        26,  4, 15, 21, 18,  2,
+//         7,  1, 28, 22, 35, 16,
+//        27, 24, 20,  5,  3, 34
+//    };
 //
-//    solver = new Solver(5, blank5, Solver::MisplacedTiles);
-//    result = (*(solver->search())).tiles;
-//    EXPECT_EQ(result, blank5);
-//    delete solver;
+//    Solver solver1(6, puzzle1, Solver::MisplacedTiles);
+//    Solver solver2(6, puzzle2, Solver::MisplacedTiles);
+//    Solver solver3(6, puzzle3, Solver::MisplacedTiles);
 //
-//    solver = new Solver(5, blank5, Solver::ManhattanDistance);
-//    result = (*(solver->search())).tiles;
-//    EXPECT_EQ(result, blank5);
-//    delete solver;
-//
-//    solver = new Solver(5, blank5, Solver::LinearConflict);
-//    result = (*(solver->search())).tiles;
-//    EXPECT_EQ(result, blank5);
-//    delete solver;
-//
-//
-//
-//    solver = new Solver(5, solvable5, Solver::MisplacedTiles);
-//    result = (*(solver->search())).tiles;
-//    EXPECT_EQ(result, blank5);
-//    delete solver;
-//
-//    solver = new Solver(5, solvable5, Solver::ManhattanDistance);
-//    result = (*(solver->search())).tiles;
-//    EXPECT_EQ(result, blank5);
-//    delete solver;
-//
-//    solver = new Solver(5, solvable5, Solver::LinearConflict);
-//    result = (*(solver->search())).tiles;
-//    EXPECT_EQ(result, blank5);
-//    delete solver;
+//    EXPECT_NO_THROW(solver1.search());
+//    EXPECT_NO_THROW(solver2.search());
+//    EXPECT_NO_THROW(solver3.search());
 //}
-
-//TEST(SolverClass, method_search_6x6) {
 //
-//    Solver *solver;
-//    std::vector<std::size_t> result;
+//TEST(SolverClass, search_6x6_ManhattanDistance) {
 //
-//    solver = new Solver(6, blank6, Solver::MisplacedTiles);
-//    result = (*(solver->search())).tiles;
-//    EXPECT_EQ(result, blank6);
-//    delete solver;
+//    std::vector<std::size_t> puzzle1 = {
+//        31,  6,  2,  0,  3,  7,
+//        15, 20,  5, 14, 13, 25,
+//        23,  1, 29, 17, 26, 19,
+//        10, 24,  4, 33, 12,  8,
+//        21, 35, 27, 11, 28, 32,
+//        22, 30, 16, 34, 18,  9,
+//    };
+//    std::vector<std::size_t> puzzle2 = {
+//        15,  8, 22, 26, 17, 25,
+//        27, 33,  0,  5, 14, 12,
+//         7, 35, 28, 21, 31, 23,
+//        32,  6, 34, 29,  2,  3,
+//        11, 10, 30, 18, 16,  9,
+//         4,  1, 20, 13, 19, 24
+//    };
+//    std::vector<std::size_t> puzzle3 = {
+//        31, 17, 12, 13,  8, 30,
+//        23, 10,  0, 32,  9, 33,
+//        11, 14, 25, 19,  6, 29,
+//        26,  4, 15, 21, 18,  2,
+//         7,  1, 28, 22, 35, 16,
+//        27, 24, 20,  5,  3, 34
+//    };
 //
-//    solver = new Solver(6, blank6, Solver::ManhattanDistance);
-//    result = (*(solver->search())).tiles;
-//    EXPECT_EQ(result, blank6);
-//    delete solver;
+//    Solver solver1(6, puzzle1, Solver::ManhattanDistance);
+//    Solver solver2(6, puzzle2, Solver::ManhattanDistance);
+//    Solver solver3(6, puzzle3, Solver::ManhattanDistance);
 //
-//    solver = new Solver(6, blank6, Solver::LinearConflict);
-//    result = (*(solver->search())).tiles;
-//    EXPECT_EQ(result, blank6);
-//    delete solver;
-//
-//
-//
-//    solver = new Solver(6, solvable6, Solver::MisplacedTiles);
-//    result = (*(solver->search())).tiles;
-//    EXPECT_EQ(result, blank6);
-//    delete solver;
-//
-//    solver = new Solver(6, solvable6, Solver::ManhattanDistance);
-//    result = (*(solver->search())).tiles;
-//    EXPECT_EQ(result, blank6);
-//    delete solver;
-//
-//    solver = new Solver(6, solvable6, Solver::LinearConflict);
-//    result = (*(solver->search())).tiles;
-//    EXPECT_EQ(result, blank6);
-//    delete solver;
+//    EXPECT_NO_THROW(solver1.search());
+//    EXPECT_NO_THROW(solver2.search());
+//    EXPECT_NO_THROW(solver3.search());
 //}
-
-//TEST(SolverClass, method_search_7x7) {
 //
-//    Solver *solver;
-//    std::vector<std::size_t> result;
+//TEST(SolverClass, search_6x6_LinearConflict) {
 //
-//    solver = new Solver(7, blank7, Solver::MisplacedTiles);
-//    result = (*(solver->search())).tiles;
-//    EXPECT_EQ(result, blank7);
-//    delete solver;
+//    std::vector<std::size_t> puzzle1 = {
+//        31,  6,  2,  0,  3,  7,
+//        15, 20,  5, 14, 13, 25,
+//        23,  1, 29, 17, 26, 19,
+//        10, 24,  4, 33, 12,  8,
+//        21, 35, 27, 11, 28, 32,
+//        22, 30, 16, 34, 18,  9,
+//    };
+//    std::vector<std::size_t> puzzle2 = {
+//        15,  8, 22, 26, 17, 25,
+//        27, 33,  0,  5, 14, 12,
+//         7, 35, 28, 21, 31, 23,
+//        32,  6, 34, 29,  2,  3,
+//        11, 10, 30, 18, 16,  9,
+//         4,  1, 20, 13, 19, 24
+//    };
+//    std::vector<std::size_t> puzzle3 = {
+//        31, 17, 12, 13,  8, 30,
+//        23, 10,  0, 32,  9, 33,
+//        11, 14, 25, 19,  6, 29,
+//        26,  4, 15, 21, 18,  2,
+//         7,  1, 28, 22, 35, 16,
+//        27, 24, 20,  5,  3, 34
+//    };
 //
-//    solver = new Solver(7, blank7, Solver::ManhattanDistance);
-//    result = (*(solver->search())).tiles;
-//    EXPECT_EQ(result, blank7);
-//    delete solver;
+//    Solver solver1(6, puzzle1, Solver::LinearConflict);
+//    Solver solver2(6, puzzle2, Solver::LinearConflict);
+//    Solver solver3(6, puzzle3, Solver::LinearConflict);
 //
-//    solver = new Solver(7, blank7, Solver::LinearConflict);
-//    result = (*(solver->search())).tiles;
-//    EXPECT_EQ(result, blank7);
-//    delete solver;
+//    EXPECT_NO_THROW(solver1.search());
+//    EXPECT_NO_THROW(solver2.search());
+//    EXPECT_NO_THROW(solver3.search());
+//}
 //
+//TEST(SolverClass, search_6x6_Mixed) {
 //
+//    std::vector<std::size_t> puzzle1 = {
+//        31,  6,  2,  0,  3,  7,
+//        15, 20,  5, 14, 13, 25,
+//        23,  1, 29, 17, 26, 19,
+//        10, 24,  4, 33, 12,  8,
+//        21, 35, 27, 11, 28, 32,
+//        22, 30, 16, 34, 18,  9,
+//    };
+//    std::vector<std::size_t> puzzle2 = {
+//        15,  8, 22, 26, 17, 25,
+//        27, 33,  0,  5, 14, 12,
+//         7, 35, 28, 21, 31, 23,
+//        32,  6, 34, 29,  2,  3,
+//        11, 10, 30, 18, 16,  9,
+//         4,  1, 20, 13, 19, 24
+//    };
+//    std::vector<std::size_t> puzzle3 = {
+//        31, 17, 12, 13,  8, 30,
+//        23, 10,  0, 32,  9, 33,
+//        11, 14, 25, 19,  6, 29,
+//        26,  4, 15, 21, 18,  2,
+//         7,  1, 28, 22, 35, 16,
+//        27, 24, 20,  5,  3, 34
+//    };
+//    Solver solver1(6, puzzle1, Solver::Mixed);
+//    Solver solver2(6, puzzle2, Solver::Mixed);
+//    Solver solver3(6, puzzle3, Solver::Mixed);
 //
-//    solver = new Solver(7, solvable7, Solver::MisplacedTiles);
-//    result = (*(solver->search())).tiles;
-//    EXPECT_EQ(result, blank7);
-//    delete solver;
-//
-//    solver = new Solver(7, solvable7, Solver::ManhattanDistance);
-//    result = (*(solver->search())).tiles;
-//    EXPECT_EQ(result, blank7);
-//    delete solver;
-//
-//    solver = new Solver(7, solvable7, Solver::LinearConflict);
-//    result = (*(solver->search())).tiles;
-//    EXPECT_EQ(result, blank7);
-//    delete solver;
+//    EXPECT_NO_THROW(solver1.search());
+//    EXPECT_NO_THROW(solver2.search());
+//    EXPECT_NO_THROW(solver3.search());
 //}
