@@ -7,7 +7,7 @@
 #include <sstream>
 
 
-Solver::Solver(int size, std::vector<std::size_t> tiles, Puzzle::heuristic f) : h(f), time_complexity(0), size_complexity(0) {
+Solver::Solver(int size, std::vector<std::size_t> tiles, Puzzle::heuristic f, std::size_t cost) : h(f), cost(cost), time_complexity(0), size_complexity(0) {
 
     std::unique_ptr<Puzzle> init_ptr(new Puzzle(size, tiles));
     std::unique_ptr<Puzzle> goal_ptr(new Puzzle(size, generate_solved_map(size)));
@@ -46,6 +46,7 @@ void Solver::search(void) {
     while (!open_list.empty()) {
 
         Puzzle *current = open_queue.top();
+
         if (current->tiles == goal->tiles) {
             *goal = *current;
             return ;
@@ -73,7 +74,7 @@ void Solver::discover_node(Puzzle const &puzzle) {
         try {
             neighbor.reset(new Puzzle(puzzle.size, puzzle.neighbor(i)));
             neighbor->parent = const_cast<Puzzle *>(&puzzle);
-            neighbor->g = puzzle.g + 0;
+            neighbor->g = puzzle.g + cost;
             neighbor->updateScore(h, *goal);
         } catch (...) {
             continue ;

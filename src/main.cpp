@@ -1,53 +1,35 @@
 
-#include "InputParser.h"
 #include "Solver.h"
-#include "Puzzle.h"
 
 #include <string>
 #include <vector>
 #include <iostream>
 
-std::vector<std::size_t> solvable3 = {
-    3, 8, 0,
-    2, 4, 1,
-    5, 7, 6,
-};
+typedef struct {
+    Solver::heuristic h = nullptr;
+    std::size_t       cost = 0;
+    std::size_t       graph = 0;
+} conf_t;
 
-std::vector<std::size_t> solvable4 = {
-     1,  2,  8,  9,
-     0, 13,  6,  5,
-    12, 15, 10,  3,
-     7, 11, 14,  4,
-};
+static void usage(void) {
 
-std::vector<std::size_t> solvable5 = {
-    23,  9, 15,  6,  0,
-    17, 19,  1, 21,  2,
-    10, 14,  7, 18, 16,
-     3, 11, 13,  5,  4,
-    12, 20,  8, 24, 22,
-};
+    std::cerr << "Usage: npuzzle [OPTIONS]" << std::endl;
+    std::cerr << std::endl;
+    std::cerr << "Search:" << std::endl;
+    std::cerr << "    -u, --uniform   uniform cost search" << std::endl;
+    std::cerr << "    -g, --greedy    greedy search (default)" << std::endl;
+    std::cerr << std::endl;
+    std::cerr << "Heuristic:" << std::endl;
+    std::cerr << "    -t, --misplaced Misplaced Tiles" << std::endl;
+    std::cerr << "    -d, --manhattan Manhattan Distance" << std::endl;
+    std::cerr << "    -l, --linear    Linear Conflict" << std::endl;
+    std::cerr << "    -m, --mixed     Mixed (default)" << std::endl;
+    std::cerr << std::endl;
+    std::cerr << "Output:" << std::endl;
+    std::cerr << "    -g, --graph     generate dot graph" << std::endl;
+}
 
-std::vector<std::size_t> solvable6 = {
-    25, 20, 14, 17, 35, 21,
-    13, 11, 29, 23,  0,  5,
-    33,  3,  4,  9, 27, 34,
-    22, 10, 26, 24, 18, 19,
-    32,  7, 16,  2, 12, 30,
-    28, 31,  8,  6,  1, 15,
-};
-
-std::vector<std::size_t> solvable7 = {
-    26, 38, 16, 43, 40,  1,  2,
-     7,  9, 47, 32,  6, 46, 10,
-    28, 36, 37, 31, 12, 35, 41,
-    22, 29, 39, 44,  5, 15,  8,
-     0, 24, 23, 18, 34, 27,  3,
-    17, 19, 13, 42, 45, 30, 11,
-    33,  4, 14, 21, 20, 48, 25,
-};
-
-std::vector<std::size_t> read_input(std::istream & is) {
+static std::vector<std::size_t> read_input(std::istream & is) {
 
     std::vector<size_t> nums;
     std::string         line;
@@ -61,7 +43,7 @@ std::vector<std::size_t> read_input(std::istream & is) {
             it++;
         }
         if (line.empty() || it != line.end())
-            throw std::runtime_error("Invalid file format");
+            throw std::runtime_error("Invalid input format");
 
         std::stringstream ss(line);
         std::string       token;
@@ -71,7 +53,7 @@ std::vector<std::size_t> read_input(std::istream & is) {
 
             int n = std::atoi(token.c_str());
             if (n < 0)
-                throw std::runtime_error("Invalid file format");
+                throw std::runtime_error("Invalid input format");
             nums.push_back(n);
         }
     }
@@ -79,33 +61,57 @@ std::vector<std::size_t> read_input(std::istream & is) {
     return (nums);
 }
 
-int main(int ac, const char **av) {
+static conf_t read_arg(int ac, char const **av) {
 
-    std::string opt_str[] = {"input", "output"};
-    InputParser config;
+    conf_t conf;
 
-    config.register_option(InputParser::STRING, opt_str, sizeof(opt_str)/sizeof(*opt_str));
-    config.read_args(ac, av);
-//    std::cout << config << std::endl;
+    conf.h = Solver::Mixed;
+
+    for (auto i = 1; i < ac; i++) {
+        std::string arg(av[i]);
+
+        if (arg == "-h" || arg == "--help")
+            usage();
+        else if (arg == "-u" || arg == "--uniform")
+            conf.cost = 1;
+        else if (arg == "-g" || arg == "--greedy")
+            conf.cost = 0;
+        else if (arg == "-t" || arg == "--misplaced")
+            conf.h = Solver::MisplacedTiles;
+        else if (arg == "-d" || arg == "--manhattan")
+            conf.h = Solver::ManhattanDistance;
+        else if (arg == "-l" || arg == "--linear")
+            conf.h = Solver::LinearConflict;
+        else if (arg == "-m" || arg == "--mixed")
+            conf.h = Solver::Mixed;
+        else if (arg == "-g" || arg == "--graph")
+            conf.graph = 1;
+        else
+            throw std::runtime_error("illegal option: -- " + arg);
+    }
+
+    return (conf);
+}
+
+int main(int ac, char const **av) {
 
     try {
+        conf_t conf = read_arg(ac, av);
+
         std::vector<size_t> input = read_input(std::cin);
         std::vector<size_t> tiles(input.begin() + 1, input.end());
         std::size_t size = input.at(0);
 
-//        std::cout << "input[" << input.size() << "] = { ";
-//        for (auto it = input.begin(); it != input.end(); it++) {
-//            std::cout << *it << " ";
-//        }
-//        std::cout << "};" << std::endl;
 
-        Solver solver(size, tiles, Solver::Mixed);
+        Solver solver(size, tiles, conf.h, conf.cost);
         solver.search();
-        std::cout << solver.report();
-//        std::cout << solver.graph();
+        if (conf.graph)
+            std::cout << solver.graph();
+        else
+            std::cout << solver.report();
 
     } catch (std::exception & e) {
-        std::cerr << "Error: " << e.what() << std::endl;
+        std::cerr << "npuzzle: error: " << e.what() << std::endl;
     }
 
     return (0);

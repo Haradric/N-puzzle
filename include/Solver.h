@@ -13,7 +13,9 @@ class Solver {
 
 public:
 
-    Solver(int size, std::vector<std::size_t> tiles, Puzzle::heuristic f);
+    typedef Puzzle::heuristic heuristic;
+
+    Solver(int size, std::vector<std::size_t> tiles, Puzzle::heuristic f, std::size_t cost = 0);
     ~Solver(void);
 
     void search(void);
@@ -43,6 +45,7 @@ private:
     Puzzle *goal;
 
     Puzzle::heuristic const h;
+    std::size_t const cost; // g(x)
 
     std::priority_queue<Puzzle *, std::vector<Puzzle *>, compare_score> open_queue;
     std::map<std::size_t, Puzzle *> open_list;
