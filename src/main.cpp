@@ -35,15 +35,18 @@ static std::vector<std::size_t> read_input(std::istream & is) {
     std::string         line;
 
     while (std::getline(is, line)) {
-        if (line[0] == '#')
-            continue ;
 
-        auto it = line.begin();
-        while (it != line.end() && (std::isspace(*it) || std::isdigit(*it))) {
-            it++;
-        }
-        if (line.empty() || it != line.end())
+        if (line.empty())
             throw std::runtime_error("Invalid input format");
+
+        auto pos = line.find('#');
+        if (pos != std::string::npos)
+            line.erase(line.begin() + pos, line.end());
+
+        for (auto it = line.begin(); it != line.end(); it++) {
+            if (!std::isspace(*it) && !std::isdigit(*it))
+                throw std::runtime_error("Invalid input format");
+        }
 
         std::stringstream ss(line);
         std::string       token;
