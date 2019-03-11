@@ -4,29 +4,32 @@
 #include <string>
 #include <vector>
 #include <iostream>
+#include <fstream>
 
 typedef struct {
     Solver::heuristic h = nullptr;
     std::size_t       cost = 0;
     std::size_t       graph = 0;
+    std::string       file;
 } conf_t;
 
-static void usage(void) {
+static void usage(int exit_code) {
 
-    std::cerr << "Usage: npuzzle [OPTIONS]" << std::endl;
+    std::cerr << "Usage: npuzzle [OPTIONS] [FILE]" << std::endl;
     std::cerr << std::endl;
     std::cerr << "Search:" << std::endl;
-    std::cerr << "    -u, --uniform   uniform cost search" << std::endl;
-    std::cerr << "    -g, --greedy    greedy search (default)" << std::endl;
+    std::cerr << "    -u, --uniform      uniform cost search" << std::endl;
+    std::cerr << "    -g, --greedy       greedy search (default)" << std::endl;
     std::cerr << std::endl;
     std::cerr << "Heuristic:" << std::endl;
-    std::cerr << "    -t, --misplaced Misplaced Tiles" << std::endl;
-    std::cerr << "    -d, --manhattan Manhattan Distance" << std::endl;
-    std::cerr << "    -l, --linear    Linear Conflict" << std::endl;
-    std::cerr << "    -m, --mixed     Mixed (default)" << std::endl;
+    std::cerr << "    -t, --misplaced    Misplaced Tiles" << std::endl;
+    std::cerr << "    -d, --manhattan    Manhattan Distance" << std::endl;
+    std::cerr << "    -l, --linear       Linear Conflict" << std::endl;
+    std::cerr << "    -m, --mixed        Mixed (default)" << std::endl;
     std::cerr << std::endl;
     std::cerr << "Output:" << std::endl;
-    std::cerr << "    -g, --graph     generate dot graph" << std::endl;
+    std::cerr << "    -g, --graph        generate dot graph" << std::endl;
+    exit(exit_code);
 }
 
 static std::vector<std::size_t> read_input(std::istream & is) {
@@ -73,8 +76,10 @@ static conf_t read_arg(int ac, char const **av) {
     for (auto i = 1; i < ac; i++) {
         std::string arg(av[i]);
 
-        if (arg == "-h" || arg == "--help")
-            usage();
+        if (i + 1 == ac && arg[0] != '-')
+            conf.file = arg;
+        else if (arg == "-h" || arg == "--help")
+            usage(0);
         else if (arg == "-u" || arg == "--uniform")
             conf.cost = 1;
         else if (arg == "-g" || arg == "--greedy")
@@ -99,12 +104,23 @@ static conf_t read_arg(int ac, char const **av) {
 int main(int ac, char const **av) {
 
     try {
+
         conf_t conf = read_arg(ac, av);
 
-        std::vector<size_t> input = read_input(std::cin);
+        std::ifstream ifile(conf.file);
+        std::vector<size_t> input;
+        if (conf.file != "") {
+            if (ifile)
+                input = read_input(ifile);
+            else
+                throw std::runtime_error("can't read from " + conf.file);
+        }
+        else {
+            input = read_input(std::cin);
+        }
+
         std::vector<size_t> tiles(input.begin() + 1, input.end());
         std::size_t size = input.at(0);
-
 
         Solver solver(size, tiles, conf.h, conf.cost);
         solver.search();
