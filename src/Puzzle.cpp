@@ -6,7 +6,7 @@
 
 std::size_t Puzzle::inst = 0;
 
-Puzzle::Puzzle(std::size_t size, std::vector<std::size_t> const & tiles) : tiles(tiles), size(size), parent(nullptr), g(0), h(0), f(0) {
+Puzzle::Puzzle(std::size_t size, tiles_t const &tiles) : tiles(tiles), size(size), parent(nullptr), g(0), h(0), f(0) {
 
     if (size < 3)
         throw std::runtime_error("The size of the puzzle should be more than 3");
@@ -17,7 +17,7 @@ Puzzle::Puzzle(std::size_t size, std::vector<std::size_t> const & tiles) : tiles
     id = inst++;
 }
 
-Puzzle::Puzzle(Puzzle const & target) : tiles(target.tiles), size(target.size) {
+Puzzle::Puzzle(Puzzle const &target) : tiles(target.tiles), size(target.size) {
 
     (*this) = target;
     id = inst++;
@@ -28,8 +28,8 @@ Puzzle::~Puzzle(void) {}
 bool Puzzle::isSolvable(void) const {
 
     auto inversions = 0;
-    for (std::size_t i = 0; i < tiles.size(); i++) {
-        for (std::size_t j = i + 1; j < tiles.size(); j++) {
+    for (auto i = 0; i < tiles.size(); i++) {
+        for (auto j = i + 1; j < tiles.size(); j++) {
             if (tiles[i] && tiles[j] && tiles[i] > tiles[j])
                 inversions++;
         }
@@ -46,15 +46,15 @@ bool Puzzle::isSolvable(void) const {
 
 }
 
-void Puzzle::updateScore(heuristic f, Puzzle const & goal) {
+void Puzzle::updateScore(heuristic f, Puzzle const &goal) {
 
     this->h = f(*this, goal);
     this->f = this->g + this->h;
 }
 
-std::vector<std::size_t> Puzzle::neighbor(int direction) const {
+Puzzle::tiles_t Puzzle::expand(int direction) const {
 
-    std::vector<std::size_t> neighbor(tiles);
+    tiles_t neighbor(tiles);
     int i_zero = std::distance(neighbor.begin(), std::find(neighbor.begin(), neighbor.end(), 0));
     int x_zero = i_zero / size;
     int y_zero = i_zero % size;
@@ -90,7 +90,7 @@ std::vector<std::size_t> Puzzle::neighbor(int direction) const {
     return (neighbor);
 }
 
-Puzzle & Puzzle::operator = (Puzzle const & target) {
+Puzzle &Puzzle::operator = (Puzzle const &target) {
 
     parent = target.parent;
     g = target.g;
@@ -100,7 +100,7 @@ Puzzle & Puzzle::operator = (Puzzle const & target) {
     return (*this);
 }
 
-bool Puzzle::operator == (Puzzle const & target) const {
+bool Puzzle::operator == (Puzzle const &target) const {
 
     return (size   == target.size &&
             tiles  == target.tiles &&
@@ -112,7 +112,7 @@ bool Puzzle::operator == (Puzzle const & target) const {
 
 bool Puzzle::check_tiles(void) const {
 
-    std::vector<std::size_t> copy(tiles), sorted(size * size);
+    tiles_t copy(tiles), sorted(size * size);
 
     std::iota(sorted.begin(), sorted.end(), 0);
     std::sort(copy.begin(), copy.end());
@@ -120,7 +120,7 @@ bool Puzzle::check_tiles(void) const {
     return (copy == sorted);
 }
 
-std::ostream & operator << (std::ostream & out, const Puzzle & rhs) {
+std::ostream &operator << (std::ostream &out, const Puzzle &rhs) {
 
     auto tiles = rhs.tiles;
     auto size  = rhs.size;

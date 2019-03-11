@@ -32,7 +32,7 @@ static void usage(int exit_code) {
     exit(exit_code);
 }
 
-static std::vector<std::size_t> read_input(std::istream & is) {
+static std::vector<std::size_t> read_input(std::istream &is) {
 
     std::vector<size_t> nums;
     std::string         line;
@@ -129,7 +129,7 @@ int main(int ac, char const **av) {
         else
             std::cout << solver.report();
 
-    } catch (std::exception & e) {
+    } catch (std::exception &e) {
         std::cerr << "npuzzle: error: " << e.what() << std::endl;
     }
 

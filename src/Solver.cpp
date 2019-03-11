@@ -6,8 +6,7 @@
 #include <memory>
 #include <sstream>
 
-
-Solver::Solver(int size, std::vector<std::size_t> tiles, Puzzle::heuristic f, std::size_t cost) : h(f), cost(cost), time_complexity(0), size_complexity(0) {
+Solver::Solver(int size, std::vector<std::size_t> const &tiles, Puzzle::heuristic f, std::size_t cost) : h(f), cost(cost), time_complexity(0), size_complexity(0) {
 
     std::unique_ptr<Puzzle> init_ptr(new Puzzle(size, tiles));
     std::unique_ptr<Puzzle> goal_ptr(new Puzzle(size, generate_solved_map(size)));
@@ -22,20 +21,20 @@ Solver::Solver(int size, std::vector<std::size_t> tiles, Puzzle::heuristic f, st
 
     Puzzle *copy = new Puzzle(*initial);
 
-    open_list.insert(std::pair<std::size_t, Puzzle *>(hash(*copy), copy));
+    open.insert(std::pair<std::size_t, Puzzle *>(hash(*copy), copy));
     open_queue.push(copy);
     time_complexity++;
 }
 
 Solver::~Solver(void) {
 
-    for (auto it = open_list.begin(); it != open_list.end(); it++)
+    for (auto it = open.begin(); it != open.end(); it++)
         delete (*it).second;
-    open_list.clear();
+    open.clear();
 
-    for (auto it = closed_list.begin(); it != closed_list.end(); it++)
+    for (auto it = closed.begin(); it != closed.end(); it++)
         delete (*it).second;
-    closed_list.clear();
+    closed.clear();
 
     delete initial;
     delete goal;
@@ -43,7 +42,7 @@ Solver::~Solver(void) {
 
 void Solver::search(void) {
 
-    while (!open_list.empty()) {
+    while (!open.empty()) {
 
         Puzzle *current = open_queue.top();
 
@@ -52,13 +51,13 @@ void Solver::search(void) {
             return ;
         }
 
-        auto it = open_list.find(hash(*current));
-        closed_list.insert(*it);
-        open_list.erase(it);
+        auto it = open.find(hash(*current));
+        closed.insert(*it);
+        open.erase(it);
         open_queue.pop();
 
         discover_node(*current);
-        size_complexity = (open_list.size() > size_complexity) ? open_list.size() : size_complexity;
+        size_complexity = (open.size() > size_complexity) ? open.size() : size_complexity;
     }
     throw std::runtime_error("can't find solution");
 }
@@ -72,7 +71,7 @@ void Solver::discover_node(Puzzle const &puzzle) {
         std::size_t             hash;
 
         try {
-            neighbor.reset(new Puzzle(puzzle.size, puzzle.neighbor(i)));
+            neighbor.reset(new Puzzle(puzzle.size, puzzle.expand(i)));
             neighbor->parent = const_cast<Puzzle *>(&puzzle);
             neighbor->g = puzzle.g + cost;
             neighbor->updateScore(h, *goal);
@@ -82,13 +81,13 @@ void Solver::discover_node(Puzzle const &puzzle) {
 
         hash = Solver::hash(*(neighbor.get()));
 
-        it = closed_list.find(hash);
-        if (it != closed_list.end())
+        it = closed.find(hash);
+        if (it != closed.end())
             continue ;
 
-        it = open_list.find(hash);
-        if (it == open_list.end()) {
-            open_list.insert(std::pair<std::size_t, Puzzle *>(hash, neighbor.get()));
+        it = open.find(hash);
+        if (it == open.end()) {
+            open.insert(std::pair<std::size_t, Puzzle *>(hash, neighbor.get()));
             open_queue.push(neighbor.get());
             time_complexity++;
             neighbor.release();
@@ -98,7 +97,7 @@ void Solver::discover_node(Puzzle const &puzzle) {
 
 std::string Solver::report(void) const {
 
-    std::stringstream ss;
+    std::stringstream   ss;
     std::list<Puzzle *> states;
 
     states.push_front(goal);
@@ -117,7 +116,7 @@ std::string Solver::report(void) const {
     return (ss.str());
 }
 
-std::string Solver::graph_node_view(Puzzle const & p, bool closed) const {
+std::string Solver::graph_node_view(Puzzle const &p, bool closed) const {
 
     std::stringstream ss;
     std::stringstream dbg_info;
@@ -148,7 +147,7 @@ std::string Solver::graph_node_view(Puzzle const & p, bool closed) const {
     return (ss.str());
 }
 
-std::string Solver::graph_node_connection(Puzzle const & p) const {
+std::string Solver::graph_node_connection(Puzzle const &p) const {
 
     std::stringstream ss;
 
@@ -179,20 +178,20 @@ std::string Solver::graph(void) const {
     ss << "    rankdir=RL" << std::endl;
     ss << "    node [shape=Mrecord];" << std::endl;
 
-    for (auto it = closed_list.begin(); it != closed_list.end(); it++) {
+    for (auto it = closed.begin(); it != closed.end(); it++) {
         ss << "    " << graph_node_view(*(it->second), 1) << std::endl;
     }
 
-    for (auto it = open_list.begin(); it != open_list.end(); it++) {
+    for (auto it = open.begin(); it != open.end(); it++) {
         ss << "    " << graph_node_view(*(it->second), 0) << std::endl;
     }
 
-    for (auto it = closed_list.begin(); it != closed_list.end(); it++) {
+    for (auto it = closed.begin(); it != closed.end(); it++) {
         if (it->second->parent)
             ss << "    " << graph_node_connection(*(it->second)) << std::endl;
     }
 
-    for (auto it = open_list.begin(); it != open_list.end(); it++) {
+    for (auto it = open.begin(); it != open.end(); it++) {
         if (it->second->parent)
             ss << "    " << graph_node_connection(*(it->second)) << std::endl;
     }
@@ -202,16 +201,16 @@ std::string Solver::graph(void) const {
     return (ss.str());
 }
 
-bool Solver::CheckParity(Puzzle const & p1, Puzzle const & p2) {
+bool Solver::CheckParity(Puzzle const &p1, Puzzle const &p2) {
 
     return (p1.size == p2.size &&
             p1.isSolvable() == p2.isSolvable());
 }
 
-int  Solver::MisplacedTiles(Puzzle const & p1, Puzzle const & p2) {
+int  Solver::MisplacedTiles(Puzzle const &p1, Puzzle const &p2) {
 
-    std::vector<std::size_t> const &t1 = p1.tiles;
-    std::vector<std::size_t> const &t2 = p2.tiles;
+    tiles_t const &t1 = p1.tiles;
+    tiles_t const &t2 = p2.tiles;
     std::size_t sum = 0;
 
     if (p1.size != p2.size)
@@ -225,12 +224,12 @@ int  Solver::MisplacedTiles(Puzzle const & p1, Puzzle const & p2) {
     return (sum);
 }
 
-int Solver::ManhattanDistance(Puzzle const & p1, Puzzle const & p2) {
+int Solver::ManhattanDistance(Puzzle const &p1, Puzzle const &p2) {
 
-    std::vector<std::size_t> const &t1 = p1.tiles;
-    std::vector<std::size_t> const &t2 = p2.tiles;
-    std::size_t size = p1.size;
-    std::size_t sum  = 0;
+    tiles_t const &t1 = p1.tiles;
+    tiles_t const &t2 = p2.tiles;
+    std::size_t size  = p1.size;
+    std::size_t sum   = 0;
 
     if (p1.size != p2.size)
         return (-1);
@@ -251,12 +250,12 @@ int Solver::ManhattanDistance(Puzzle const & p1, Puzzle const & p2) {
     return (sum);
 }
 
-int  Solver::LinearConflict(Puzzle const & p1, Puzzle const & p2) {
+int  Solver::LinearConflict(Puzzle const &p1, Puzzle const &p2) {
 
-    std::vector<std::size_t> const &t1 = p1.tiles;
-    std::vector<std::size_t> const &t2 = p2.tiles;
-    std::size_t size    = p1.size;
-    std::size_t linear  = 0;
+    tiles_t const &t1 = p1.tiles;
+    tiles_t const &t2 = p2.tiles;
+    std::size_t   size    = p1.size;
+    std::size_t   linear  = 0;
 
     if (p1.size != p2.size)
         return (-1);
@@ -300,14 +299,14 @@ int  Solver::LinearConflict(Puzzle const & p1, Puzzle const & p2) {
     return (ManhattanDistance(p1, p2) + 2 * linear);
 }
 
-int  Solver::Mixed(Puzzle const & p1, Puzzle const & p2) {
+int  Solver::Mixed(Puzzle const &p1, Puzzle const &p2) {
 
     return (MisplacedTiles(p1, p2) + LinearConflict(p1, p2));
 }
 
-std::vector<std::size_t> Solver::generate_solved_map(int size) {
+Solver::tiles_t Solver::generate_solved_map(int size) {
 
-    std::vector<std::size_t> tiles;
+    tiles_t tiles;
     int i = 0;    // first row
     int j = 0;    // first column
     int m = size; // last row
@@ -345,7 +344,7 @@ std::vector<std::size_t> Solver::generate_solved_map(int size) {
     return (tiles);
 }
 
-std::size_t Solver::hash(Puzzle const & puzzle) {
+std::size_t Solver::hash(Puzzle const &puzzle) {
 
     std::size_t seed = puzzle.size;
 

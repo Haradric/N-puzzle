@@ -12,23 +12,24 @@ class Puzzle {
 public:
 
     typedef int (*heuristic)(Puzzle const &, Puzzle const &);
+    typedef std::vector<std::size_t> tiles_t;
     enum direction { UP, DOWN, LEFT, RIGHT, DIRECTION_LAST };
 
-    Puzzle(std::size_t size, std::vector<std::size_t> const & tiles);
+    Puzzle(std::size_t size, tiles_t const &tiles);
     Puzzle(Puzzle const &);
     ~Puzzle(void);
 
     bool isSolvable(void) const ;
-    void updateScore(heuristic f, Puzzle const & goal);
+    void updateScore(heuristic f, Puzzle const &goal);
 
-    std::vector<std::size_t> neighbor(int direction) const ;
+    tiles_t expand(int direction) const ;
 
-    Puzzle & operator = (Puzzle const & target);
-    bool     operator == (Puzzle const & target) const ;
+    Puzzle &operator =  (Puzzle const &target);
+    bool    operator == (Puzzle const &target) const ;
 
-    std::vector<std::size_t> const tiles;
+    tiles_t     const tiles;
     std::size_t const size;
-    Puzzle *parent;
+    Puzzle            *parent;
 
     std::size_t id;
     std::size_t g;  // cost
@@ -43,6 +44,6 @@ private:
 
 };
 
-std::ostream & operator << (std::ostream & out, const Puzzle & rhs);
+std::ostream &operator << (std::ostream &out, const Puzzle &rhs);
 
 #endif
