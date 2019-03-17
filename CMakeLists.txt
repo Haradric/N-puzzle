@@ -1,6 +1,6 @@
 
 cmake_minimum_required(VERSION 3.13)
-project(npuzzle)
+project(npuzzle LANGUAGES CXX)
 
 set(COVERAGE OFF CACHE BOOL "Code coverage flags")
 
@@ -29,12 +29,10 @@ target_include_directories(solver
 
 target_sources(solver
     PUBLIC
-#        ${CMAKE_CURRENT_LIST_DIR}/include/InputParser.h
         ${CMAKE_CURRENT_LIST_DIR}/include/Puzzle.h
         ${CMAKE_CURRENT_LIST_DIR}/include/Solver.h
 
     PRIVATE
-#        ${CMAKE_CURRENT_LIST_DIR}/src/InputParser.cpp
         ${CMAKE_CURRENT_LIST_DIR}/src/Puzzle.cpp
         ${CMAKE_CURRENT_LIST_DIR}/src/Solver.cpp
 )
@@ -53,7 +51,6 @@ target_link_libraries(test PUBLIC gtest_main solver)
 
 target_sources(test
     PUBLIC
-#        ${CMAKE_CURRENT_LIST_DIR}/src/testInputParserClass.cpp
         ${CMAKE_CURRENT_LIST_DIR}/src/testPuzzleClass.cpp
         ${CMAKE_CURRENT_LIST_DIR}/src/testSolverClass.cpp
 )
