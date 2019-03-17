@@ -28,7 +28,7 @@ static void usage(int exit_code) {
     std::cerr << "    -m, --mixed        Mixed (default)" << std::endl;
     std::cerr << std::endl;
     std::cerr << "Output:" << std::endl;
-    std::cerr << "    -g, --graph        generate dot graph" << std::endl;
+    std::cerr << "    -r, --graph        generate dot graph" << std::endl;
     exit(exit_code);
 }
 
@@ -92,7 +92,7 @@ static conf_t read_arg(int ac, char const **av) {
             conf.h = Solver::LinearConflict;
         else if (arg == "-m" || arg == "--mixed")
             conf.h = Solver::Mixed;
-        else if (arg == "-g" || arg == "--graph")
+        else if (arg == "-r" || arg == "--graph")
             conf.graph = 1;
         else
             throw std::runtime_error("illegal option: -- " + arg);
