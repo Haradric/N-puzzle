@@ -1,6 +1,6 @@
 
-#include "gtest/gtest.h"
 #include "Solver.h"
+#include "gtest/gtest.h"
 
 // puzzleX   - solved
 // puzzleX_0 - unsolvable

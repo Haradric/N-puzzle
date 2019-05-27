@@ -4,10 +4,10 @@
 
 #include "Puzzle.h"
 #include <cstddef>
-#include <vector>
 #include <map>
-#include <queue>
 #include <memory>
+#include <queue>
+#include <vector>
 
 class Solver {
 
@@ -38,9 +38,10 @@ private:
 
     typedef std::priority_queue<Puzzle *, std::vector<Puzzle *>, compare_score> solver_pq;
 
+    static tiles_t generate_solved_map(int size);
+    static std::size_t hash(Puzzle const &);
+
     void discover_node(Puzzle const &);
-    tiles_t generate_solved_map(int size);
-    std::size_t hash(Puzzle const &);
     std::string graph_node_view(Puzzle const &p, bool closed) const ;
     std::string graph_node_connection(Puzzle const &p) const ;
 

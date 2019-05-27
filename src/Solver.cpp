@@ -1,8 +1,7 @@
 
 #include "Solver.h"
-
-#include <list>
 #include <algorithm>
+#include <list>
 #include <memory>
 #include <sstream>
 
@@ -201,19 +200,19 @@ std::string Solver::graph(void) const {
     return (ss.str());
 }
 
-bool Solver::CheckParity(Puzzle const &p1, Puzzle const &p2) {
+bool Solver::CheckParity(Puzzle const &puzzle, Puzzle const &goal) {
 
-    return (p1.size == p2.size &&
-            p1.isSolvable() == p2.isSolvable());
+    return (puzzle.size == goal.size &&
+            puzzle.isSolvable() == goal.isSolvable());
 }
 
-int  Solver::MisplacedTiles(Puzzle const &p1, Puzzle const &p2) {
+int  Solver::MisplacedTiles(Puzzle const &puzzle, Puzzle const &goal) {
 
-    tiles_t const &t1 = p1.tiles;
-    tiles_t const &t2 = p2.tiles;
+    tiles_t const &t1 = puzzle.tiles;
+    tiles_t const &t2 = goal.tiles;
     std::size_t sum = 0;
 
-    if (p1.size != p2.size)
+    if (puzzle.size != goal.size)
         return (-1);
 
     for (auto i = 0; i < t1.size(); i++) {
@@ -224,14 +223,14 @@ int  Solver::MisplacedTiles(Puzzle const &p1, Puzzle const &p2) {
     return (sum);
 }
 
-int Solver::ManhattanDistance(Puzzle const &p1, Puzzle const &p2) {
+int Solver::ManhattanDistance(Puzzle const &puzzle, Puzzle const &goal) {
 
-    tiles_t const &t1 = p1.tiles;
-    tiles_t const &t2 = p2.tiles;
-    std::size_t size  = p1.size;
+    tiles_t const &t1 = puzzle.tiles;
+    tiles_t const &t2 = goal.tiles;
+    std::size_t size  = puzzle.size;
     std::size_t sum   = 0;
 
-    if (p1.size != p2.size)
+    if (puzzle.size != goal.size)
         return (-1);
 
     for (auto i = 0; i < t1.size(); i++) {
@@ -250,14 +249,14 @@ int Solver::ManhattanDistance(Puzzle const &p1, Puzzle const &p2) {
     return (sum);
 }
 
-int  Solver::LinearConflict(Puzzle const &p1, Puzzle const &p2) {
+int  Solver::LinearConflict(Puzzle const &puzzle, Puzzle const &goal) {
 
-    tiles_t const &t1 = p1.tiles;
-    tiles_t const &t2 = p2.tiles;
-    std::size_t   size    = p1.size;
+    tiles_t const &t1 = puzzle.tiles;
+    tiles_t const &t2 = goal.tiles;
+    std::size_t   size    = puzzle.size;
     std::size_t   linear  = 0;
 
-    if (p1.size != p2.size)
+    if (puzzle.size != goal.size)
         return (-1);
 
     for (auto i = 0; i < t1.size(); i++) {
@@ -296,12 +295,12 @@ int  Solver::LinearConflict(Puzzle const &p1, Puzzle const &p2) {
         }
     }
 
-    return (ManhattanDistance(p1, p2) + 2 * linear);
+    return (ManhattanDistance(puzzle, goal) + 2 * linear);
 }
 
-int  Solver::Mixed(Puzzle const &p1, Puzzle const &p2) {
+int  Solver::Mixed(Puzzle const &puzzle, Puzzle const &goal) {
 
-    return (MisplacedTiles(p1, p2) + LinearConflict(p1, p2));
+    return (MisplacedTiles(puzzle, goal) + LinearConflict(puzzle, goal));
 }
 
 Solver::tiles_t Solver::generate_solved_map(int size) {

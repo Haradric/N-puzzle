@@ -1,6 +1,6 @@
 
-#include "gtest/gtest.h"
 #include "Puzzle.h"
+#include "gtest/gtest.h"
 
 static std::vector<std::size_t> blank3 = {
     1, 2, 3,

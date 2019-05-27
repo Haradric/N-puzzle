@@ -3,9 +3,9 @@
 #define PUZZLE_H
 
 #include <cstddef>
-#include <vector>
 #include <iostream>
 #include <sstream>
+#include <vector>
 
 class Puzzle {
 

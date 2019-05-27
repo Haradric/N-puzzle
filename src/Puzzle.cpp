@@ -1,8 +1,8 @@
 
 #include "Puzzle.h"
 #include <algorithm>
-#include <numeric>
 #include <iomanip>
+#include <numeric>
 
 std::size_t Puzzle::inst = 0;
 

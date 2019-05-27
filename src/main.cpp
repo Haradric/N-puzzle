@@ -1,10 +1,9 @@
 
 #include "Solver.h"
-
+#include <fstream>
+#include <iostream>
 #include <string>
 #include <vector>
-#include <iostream>
-#include <fstream>
 
 typedef struct {
     Solver::heuristic h = nullptr;
